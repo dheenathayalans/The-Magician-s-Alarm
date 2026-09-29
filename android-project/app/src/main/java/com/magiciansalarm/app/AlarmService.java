@@ -112,7 +112,7 @@ public class AlarmService extends Service {
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setContentIntent(fullScreenPendingIntent)
             .addAction(R.drawable.ic_launcher, "✨ Open Practice", openAppPendingIntent)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "✕ Dismiss", dismissPendingIntent)
+            .addAction(R.drawable.ic_launcher, "✕ Dismiss", dismissPendingIntent)
             .build();
 
         startForeground(NOTIFICATION_ID, notification);
@@ -233,7 +233,6 @@ public class AlarmService extends Service {
                 channel.setDescription("Critical notifications that wake the screen for daily 5-minute practices");
                 channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
                 channel.enableVibration(true);
-                channel.setBypassDnd(true);
                 
                 AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ALARM)
