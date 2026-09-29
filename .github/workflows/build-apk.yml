@@ -14,10 +14,10 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-    - name: Setup Gradle
+    - name: Install & Setup Gradle 8.4
       uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.4'
     - name: Build APK with Gradle
       working-directory: android-project
       run: gradle assembleDebug --stacktrace
