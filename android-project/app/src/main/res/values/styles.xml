@@ -4,8 +4,6 @@
     </style>
 
     <style name="AlarmTheme" parent="android:Theme.NoTitleBar.Fullscreen">
-        <item name="android:windowBackground">#070913</item>
-        <item name="android:windowShowWhenLocked">true</item>
-        <item name="android:windowTurnScreenOn">true</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
     </style>
 </resources>
