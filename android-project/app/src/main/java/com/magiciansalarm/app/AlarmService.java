@@ -62,7 +62,7 @@ public class AlarmService extends Service {
 
         int alarmId = intent.getIntExtra(AlarmConstants.EXTRA_ALARM_ID, 1);
         String label = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_LABEL);
-        if (label == null || label.isEmpty()) label = "Spirit's Positivity Challenge";
+        if (label == null || label.isEmpty()) label = "Spirit Positivity Challenge";
         String timeStr = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_TIME);
         if (timeStr == null) timeStr = "Now";
 
@@ -84,7 +84,7 @@ public class AlarmService extends Service {
             this, alarmId, alarmActivityIntent, pendingFlags
         );
 
-        // Action: Open Spirit's Ceremony
+        // Action: Open Spirit Ceremony
         Intent openAppIntent = new Intent(this, MainActivity.class);
         openAppIntent.setAction(AlarmConstants.ACTION_OPEN_SPIRIT);
         openAppIntent.putExtra("auto_open_spirit", true);
@@ -102,7 +102,7 @@ public class AlarmService extends Service {
         // Build Alarm Notification
         Notification notification = new NotificationCompat.Builder(this, AlarmConstants.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher)
-            .setContentTitle("🔔 " + label)
+            .setContentTitle(label)
             .setContentText("Time for your 5-minute positivity practice. Tap to begin!")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
@@ -111,8 +111,8 @@ public class AlarmService extends Service {
             .setAutoCancel(false)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setContentIntent(fullScreenPendingIntent)
-            .addAction(R.drawable.ic_launcher, "✨ Open Practice", openAppPendingIntent)
-            .addAction(R.drawable.ic_launcher, "✕ Dismiss", dismissPendingIntent)
+            .addAction(R.drawable.ic_launcher, "Open Practice", openAppPendingIntent)
+            .addAction(R.drawable.ic_launcher, "Dismiss", dismissPendingIntent)
             .build();
 
         startForeground(NOTIFICATION_ID, notification);
@@ -121,7 +121,7 @@ public class AlarmService extends Service {
         try {
             startActivity(alarmActivityIntent);
         } catch (Exception e) {
-            Log.e(TAG, "Direct startActivity error (falling back to full screen intent): " + e.getMessage());
+            Log.e(TAG, "Direct startActivity error: " + e.getMessage());
         }
 
         // Play looping alarm sound (rings even in Silent / Vibrate mode)
@@ -132,7 +132,6 @@ public class AlarmService extends Service {
 
     private void startAlarmAudioAndVibration() {
         try {
-            // Request AudioFocus on USAGE_ALARM so it takes priority
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -142,7 +141,6 @@ public class AlarmService extends Service {
                 audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
                     .setAudioAttributes(audioAttributes)
                     .setOnAudioFocusChangeListener(focusChange -> {
-                        // Keep playing! Do not allow other apps to silence this sacred alarm.
                         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
                             try { mediaPlayer.start(); } catch (Exception ignored) {}
                         }
@@ -151,7 +149,6 @@ public class AlarmService extends Service {
                 audioManager.requestAudioFocus(audioFocusRequest);
             }
 
-            // Get default alarm sound, or notification/ringtone fallback
             Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
             if (alarmUri == null) {
                 alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -168,7 +165,7 @@ public class AlarmService extends Service {
 
             mediaPlayer.setDataSource(this, alarmUri);
             mediaPlayer.setAudioAttributes(audioAttributes);
-            mediaPlayer.setLooping(true); // Loop until user dismisses!
+            mediaPlayer.setLooping(true);
             mediaPlayer.prepare();
             mediaPlayer.start();
             Log.d(TAG, "Alarm sound started playing on USAGE_ALARM (Audible in silent mode).");
@@ -177,7 +174,6 @@ public class AlarmService extends Service {
             Log.e(TAG, "Error playing alarm sound: " + e.getMessage());
         }
 
-        // Loop vibration
         try {
             if (vibrator != null && vibrator.hasVibrator()) {
                 long[] pattern = { 0, 800, 400, 800, 400, 1000 };
