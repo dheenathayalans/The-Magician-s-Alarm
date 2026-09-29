@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#070913"
+    android:padding="24dp">
+
+    <!-- Top Glow / Tag -->
+    <LinearLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#1DF5C344"
+            android:paddingStart="14dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="6dp"
+            android:text="✨ SPIRIT'S POSITIVITY CHALLENGE"
+            android:textColor="#F5C344"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Center Content: Bell, Time, Label, Guidance -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/alarm_bell_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔔"
+            android:textSize="64sp" />
+
+        <TextView
+            android:id="@+id/alarm_time_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="07:00"
+            android:textColor="#FFFFFF"
+            android:textSize="54sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/alarm_label_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Morning Positivity Practice"
+            android:textColor="#FDE68A"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:text="&quot;Our job is to deny reality to negativity and doom in this moment.&quot;"
+            android:textColor="#94A3B8"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+
+    <!-- Bottom Actions: Let Spirit Decide, Snooze, Bedtime, Dismiss -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical">
+
+        <!-- Primary Spirit Button -->
+        <Button
+            android:id="@+id/btn_open_spirit"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="#F5C344"
+            android:text="✨ OPEN APP &amp; LET SPIRIT DECIDE"
+            android:textColor="#0B0D19"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <!-- Snooze Button -->
+        <Button
+            android:id="@+id/btn_snooze"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:background="#1E293B"
+            android:text="⏰ Snooze 15 Minutes"
+            android:textColor="#E2E8F0"
+            android:textSize="13sp" />
+
+        <!-- Bedtime Queue Button -->
+        <Button
+            android:id="@+id/btn_bedtime_queue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:background="#2E1065"
+            android:text="🌙 Do It Tonight (Bedtime Queue)"
+            android:textColor="#C084FC"
+            android:textSize="13sp" />
+
+        <!-- Dismiss Button -->
+        <Button
+            android:id="@+id/btn_dismiss"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:text="✕ Dismiss Alarm"
+            android:textColor="#64748B"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,74 @@
+{
+  "id": "/",
+  "name": "The Magician's Alarm - Spirit's Positivity Challenge",
+  "short_name": "Magician's Alarm",
+  "description": "Transform your life with 5 daily 5-minute positivity rituals. Let Spirit decide your sacred tool, build daily streaks, and unlock divine fortune rewards.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#070913",
+  "theme_color": "#0b0d19",
+  "orientation": "portrait",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["lifestyle", "productivity", "utilities", "health"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "The Magician's Alarm Daily 5x5 Practice"
+    },
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "The Magician's Alarm Desktop Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Let Spirit Decide",
+      "short_name": "Spirit Decide",
+      "description": "Start a 5-minute positivity practice",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

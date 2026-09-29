@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0b0d19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="The Magician's Alarm - Complete 5 daily 5-minute positivity rituals. Let Spirit decide your sacred tool and unlock daily fortune wisdom.">
+  <title>The Magician's Alarm • Spirit's Positivity Challenge</title>
+  
+  <link rel="manifest" href="manifest.json?v=2">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=2">
+  <link rel="stylesheet" href="style.css?v=8">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=8')
+          .then(reg => {
+            reg.update();
+            console.log('ServiceWorker registered:', reg.scope);
+          })
+          .catch(err => console.log('ServiceWorker error:', err));
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Animated Cosmic Particles Canvas -->
+  <canvas id="cosmic-canvas"></canvas>
+
+  <!-- Mobile Viewport Frame -->
+  <div class="app-viewport">
+    
+    <!-- Ambient Cosmic Auras -->
+    <div class="ambient-glow top-gold"></div>
+    <div class="ambient-glow bottom-purple"></div>
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="header-icon-badge">
+          <img src="icon-192.png?v=2" alt="The Magician's Alarm Logo" class="header-logo-img">
+        </div>
+        <div class="header-title-group">
+          <h1>The Magician's Alarm</h1>
+          <div class="subtitle">Spirit's Positivity Challenge</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="openTeachingModal()" title="Read The Teaching (Why You Need This App)">
+          📖
+        </button>
+        <button class="icon-btn" onclick="testAlarmSound()" title="Test Alarm Chime">
+          🔔
+        </button>
+        <button class="icon-btn" onclick="switchView('alarms-view')" title="Settings & Alarms">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- App Content Scrollable Views -->
+    <main class="app-content">
+
+      <!-- ================================================================= -->
+      <!-- 1. HOME VIEW                                                      -->
+      <!-- ================================================================= -->
+      <section id="home-view" class="view-panel active">
+        
+        <!-- Magician Mindset Inspiration Banner -->
+        <div class="magician-banner">
+          <div class="banner-header">
+            <span class="banner-tag">🧙‍♂️ Magician's Mindset</span>
+            <span id="home-streak-badge" class="banner-streak-pill">🔥 1 Day Streak</span>
+          </div>
+          <div class="magician-quote">
+            "You are the magician. You will either do the magic, or you will sit and cry. With 150 prayers and blessings a month, it is impossible that things don't change."
+          </div>
+          <div class="magician-author">— GD</div>
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <button class="btn-secondary-glass" style="padding: 5px 14px; font-size: 11.5px; border-radius: 999px; color: var(--gold-light); border-color: rgba(245, 195, 68, 0.4); background: rgba(245, 195, 68, 0.08);" onclick="openTeachingModal()">
+              📖 Why You Need This App (The Teaching by GD)
+            </button>
+          </div>
+        </div>
+
+        <!-- Daily 5x5 Progress Tracker Card -->
+        <div class="progress-card">
+          <div class="progress-header">
+            <span class="progress-title">Today's Sacred 5x5 Practice</span>
+            <span class="challenge-pill">🎯 Goal: 5 Sessions</span>
+          </div>
+
+          <!-- Circular SVG Radial Progress -->
+          <div class="circle-progress-container">
+            <svg class="circle-progress-svg" viewBox="0 0 160 160">
+              <defs>
+                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffd700" />
+                  <stop offset="50%" stop-color="#f5c344" />
+                  <stop offset="100%" stop-color="#d97706" />
+                </linearGradient>
+              </defs>
+              <circle class="circle-progress-bg" cx="80" cy="80" r="70" />
+              <circle id="home-progress-stroke" class="circle-progress-bar" cx="80" cy="80" r="70" />
+            </svg>
+            <div class="circle-inner-content">
+              <div class="circle-session-count">
+                <span id="home-completed-count">0</span>
+                <span class="total-target">/5</span>
+              </div>
+              <div class="circle-label">Sessions</div>
+              <div id="home-minutes-count" class="circle-minutes-badge">0 mins completed</div>
+            </div>
+          </div>
+
+          <!-- 5 Session Beads -->
+          <div id="home-session-beads" class="session-beads">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Pending / Evening Queue Alert Banner (shown if sessions postponed) -->
+        <div id="home-pending-banner" class="pending-alert-banner" style="display: none;">
+          <div class="pending-alert-info">
+            <span class="pending-moon-icon">🌙</span>
+            <div class="pending-alert-text">
+              <h4>Bedtime Queue Active</h4>
+              <p><span id="pending-count-number">0</span> practice(s) pending for tonight</p>
+            </div>
+          </div>
+          <button class="btn-pending-action" onclick="startEveningQueue()">Clear Queue</button>
+        </div>
+
+        <!-- Daily Reward Claim Banner (if 5/5 complete) -->
+        <div id="daily-reward-claim-box" class="pending-alert-banner" style="display: none; background: linear-gradient(135deg, rgba(217, 119, 6, 0.4) 0%, rgba(120, 53, 15, 0.6) 100%); border-color: #ffd700;">
+          <div class="pending-alert-info">
+            <span style="font-size: 26px;">🥠</span>
+            <div class="pending-alert-text">
+              <h4 style="color:#ffd700;">5/5 Complete! Fortune Ready</h4>
+              <p style="color:#fde68a;">Tap to crack open today's divine reward</p>
+            </div>
+          </div>
+          <button class="btn-primary-glow" style="padding: 6px 14px; font-size: 12px; border-radius: 999px;" onclick="openDailyRewardCeremony()">Crack Cookie</button>
+        </div>
+
+        <!-- PRIMARY CALL TO ACTION: LET SPIRIT DECIDE -->
+        <div class="spirit-action-section">
+          <button class="btn-let-spirit-decide" onclick="triggerLetSpiritDecide()">
+            <span class="btn-spirit-sparkle">✨</span>
+            <span>Let Spirit Decide</span>
+            <span class="btn-spirit-sparkle">✨</span>
+          </button>
+          <div class="spirit-hint">Smart randomizer selects from the 10 Positivity Tools</div>
+        </div>
+
+        <!-- Quick Navigation Cards -->
+        <div class="quick-cards-grid">
+          <div class="quick-card" onclick="switchView('library-view')">
+            <span class="quick-card-icon">📚</span>
+            <span class="quick-card-title">10 Tools Library</span>
+            <span class="quick-card-desc">Browse formulas & instructions</span>
+          </div>
+          <div class="quick-card" onclick="switchView('history-view')">
+            <span class="quick-card-icon">🥠</span>
+            <span class="quick-card-title">Cookie Jar</span>
+            <span class="quick-card-desc">Saved daily fortunes & stats</span>
+          </div>
+          <div class="quick-card" onclick="switchView('alarms-view')">
+            <span class="quick-card-icon">⏰</span>
+            <span class="quick-card-title">5 Daily Alarms</span>
+            <span class="quick-card-desc">Chimes & schedule setup</span>
+          </div>
+          <div class="quick-card" onclick="startEveningQueue()">
+            <span class="quick-card-icon">🌙</span>
+            <span class="quick-card-title">Night Routine</span>
+            <span class="quick-card-desc">Finish pending bedtime practices</span>
+          </div>
+        </div>
+
+        <!-- Next Alarm Status Badge -->
+        <div class="next-alarm-badge">
+          <span>🔔 Next Scheduled Alarm:</span>
+          <span id="next-alarm-display" class="next-alarm-time">08:00 (Calculating...)</span>
+        </div>
+
+      </section>
+
+
+      <!-- ================================================================= -->
+      <!-- 2. PRACTICE SESSION VIEW (5-Minute Countdown Timer)               -->
+      <!-- ================================================================= -->
+      <section id="practice-view" class="view-panel">
+        <div class="practice-view-container">
+          
+          <div>
+            <div id="practice-tool-badge" class="practice-header-badge">
+              Tool #1 • Healing & Blessing
+            </div>
+            <h2 id="practice-tool-heading" class="practice-tool-name">New Ho'oponopono</h2>
+            <div id="practice-tool-tagline" class="practice-tool-sub">
+              "I LOVE you. I SEE you. I HONOR you. I BLESS you."
+            </div>
+          </div>
+
+          <!-- Circular 5-Min Timer Visualizer -->
+          <div class="timer-radial-box">
+            <svg class="timer-radial-svg" viewBox="0 0 220 220">
+              <defs>
+                <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffd700" />
+                  <stop offset="50%" stop-color="#f5c344" />
+                  <stop offset="100%" stop-color="#fbbf24" />
+                </linearGradient>
+              </defs>
+              <circle class="timer-bg-track" cx="110" cy="110" r="95" />
+              <circle id="timer-fg-fill" class="timer-fg-fill" cx="110" cy="110" r="95" />
+            </svg>
+            <div class="timer-center-core">
+              <div id="timer-digits" class="timer-digits">05:00</div>
+              <div id="timer-state-label" class="timer-state-label">MEDITATING...</div>
+            </div>
+          </div>
+
+          <!-- Gentle Breathing Visual Indicator -->
+          <div class="breathing-indicator">
+            <div class="breath-circle-pulse"></div>
+            <span>Breathe Deeply • Anchor the Light</span>
+          </div>
+
+          <!-- Rotating Sacred Practice Guide -->
+          <div class="practice-guide-card">
+            <div id="guide-step-title" class="guide-step-title">
+              PRACTICE GUIDANCE (1/4)
+            </div>
+            <div id="guide-step-text" class="guide-step-text">
+              Envision a person, place, or situation in your mind's eye and speak with feeling.
+            </div>
+          </div>
+
+          <!-- Timer Controls -->
+          <div class="timer-controls-row">
+            <button class="btn-timer-ctrl" onclick="audioEngine.playZenChime()" title="Play Temple Bell">🔔</button>
+            <button id="btn-timer-toggle" class="btn-timer-ctrl btn-timer-playpause" onclick="sessionTimer.pauseResume()" title="Pause / Resume">⏸️</button>
+            <button class="btn-timer-ctrl" onclick="openPostponeModal()" title="Busy? Postpone session">🌙</button>
+          </div>
+
+          <button class="btn-postpone-link" onclick="openPostponeModal()">
+            In a meeting or busy? Postpone or move to night queue
+          </button>
+
+        </div>
+      </section>
+
+
+      <!-- ================================================================= -->
+      <!-- 3. 10-TOOL LIBRARY VIEW                                           -->
+      <!-- ================================================================= -->
+      <section id="library-view" class="view-panel">
+        <div class="library-header-group">
+          <h2 style="font-family: var(--font-serif); font-size: 20px; color: var(--gold-light); margin-bottom: 6px;">
+            The 10 Positivity Tools
+          </h2>
+          <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px;">
+            Master the sacred instruments to interrupt negativity and create daily miracles.
+          </p>
+
+          <!-- Teaching Document Quick Banner in Library View -->
+          <div style="background: rgba(245, 195, 68, 0.08); border: 1px solid rgba(245, 195, 68, 0.3); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--gold-light);">📖 Spirit's Positivity Challenge</div>
+              <div style="font-size: 11.5px; color: var(--text-secondary);">Read GD's original teaching & why we do the 5x5 ritual</div>
+            </div>
+            <button class="btn-primary-glow" style="padding: 6px 14px; font-size: 12px; white-space: nowrap;" onclick="openTeachingModal()">
+              Read Guide
+            </button>
+          </div>
+
+          <div class="library-search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="library-search-input" class="library-search-input" placeholder="Search tools or teachings...">
+          </div>
+
+          <div class="category-chips-row">
+            <button class="category-chip active" onclick="renderToolsLibrary('All')">All Tools (10)</button>
+            <button class="category-chip" onclick="renderToolsLibrary('Healing')">Healing & Blessing</button>
+            <button class="category-chip" onclick="renderToolsLibrary('Manifestation')">Manifestation</button>
+            <button class="category-chip" onclick="renderToolsLibrary('Peace')">Release & Peace</button>
+            <button class="category-chip" onclick="renderToolsLibrary('Truth')">Highest Truth</button>
+          </div>
+        </div>
+
+        <div id="tools-library-list" class="tool-list-container">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </section>
+
+
+      <!-- ================================================================= -->
+      <!-- 4. HISTORY, STATS & FORTUNE COOKIE JAR                            -->
+      <!-- ================================================================= -->
+      <section id="history-view" class="view-panel">
+        <h2 style="font-family: var(--font-serif); font-size: 20px; color: var(--gold-light); margin-bottom: 4px;">
+          Progress & Cookie Jar
+        </h2>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+          Your spiritual momentum and unlocked divine wisdom.
+        </p>
+
+        <!-- Stats Overview Cards -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+            <div id="stat-total-sessions" style="font-size: 20px; font-weight: 800; color: var(--gold-primary);">0</div>
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Total Sessions</div>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+            <div id="stat-total-minutes" style="font-size: 20px; font-weight: 800; color: var(--cyan-accent);">0m</div>
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">High Frequency</div>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+            <div id="stat-streak" style="font-size: 20px; font-weight: 800; color: #ff9f43;">1 Day</div>
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Streak</div>
+          </div>
+        </div>
+
+        <!-- 30-Day Positivity Challenge Goal Snippet -->
+        <div style="background: rgba(14, 17, 34, 0.6); border: 1px dashed var(--border-gold); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--gold-light);">30-Day Miracle Challenge</span>
+            <span style="font-size: 11px; color: var(--text-secondary);">Target: 150 Practices</span>
+          </div>
+          <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
+            "30 minutes a day for 30 days. Complete 150 sessions and see the miracles it brings into your life."
+          </div>
+        </div>
+
+        <div class="settings-section-title">
+          <span id="cookie-jar-title-badge">🥠 Unlocked Fortune Cookie Jar</span>
+        </div>
+        <div id="cookie-jar-grid" style="margin-bottom: 24px;">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="settings-section-title">
+          <span>📜 Today's Session History</span>
+        </div>
+        <div id="session-history-timeline">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+
+      <!-- ================================================================= -->
+      <!-- 5. ALARMS & SOUND SETTINGS VIEW                                   -->
+      <!-- ================================================================= -->
+      <section id="alarms-view" class="view-panel">
+        <h2 style="font-family: var(--font-serif); font-size: 20px; color: var(--gold-light); margin-bottom: 4px;">
+          Alarms & Sound Setup
+        </h2>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+          Configure up to 5 daily positivity reminders and your bedtime queue.
+        </p>
+
+        <div class="settings-section-title">
+          <span>⏰ 5 Daily Practice Reminders</span>
+        </div>
+        <div id="alarms-list-container" class="alarm-list-box">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+        <div class="settings-section-title">
+          <span>🌙 Bedtime / Evening Queue Alarm</span>
+        </div>
+        <div class="alarm-row-item" style="margin-bottom: 20px;">
+          <div class="alarm-time-group">
+            <input type="time" id="bedtime-alarm-input" class="alarm-input-time" value="22:00" onchange="updateBedtimeAlarm(this.value)">
+            <div>
+              <div style="font-weight:700; font-size:13.5px; color:white;">Night Wrap-up</div>
+              <div class="alarm-label-text">Surfaces unfinished sessions</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="bedtime-alarm-toggle" checked onchange="toggleBedtimeAlarm(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-section-title">
+          <span>🔔 Alarm Sound Choice</span>
+        </div>
+        <div id="sounds-grid" class="sound-selector-grid">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Android & Samsung Native Permissions Section -->
+        <div id="android-permissions-section" style="display: none;">
+          <div class="settings-section-title">
+            <span>⚡ Android & Samsung Alarm Permissions</span>
+          </div>
+          <div class="native-permissions-card">
+            <div style="font-size: 11.5px; color: var(--gold-light); margin-bottom: 12px; line-height: 1.4;">
+              🛡️ To guarantee your alarms ring over the lock screen, even in Silent Mode and when the phone is sleeping, enable these permissions:
+            </div>
+
+            <!-- Battery Optimization (Samsung Sleeping Apps) -->
+            <div class="permission-row">
+              <div class="permission-info">
+                <span class="permission-title">🔋 Run in Background</span>
+                <span class="permission-desc">Exempt from Battery Saver / Samsung Sleeping Apps</span>
+              </div>
+              <span id="perm-badge-battery" class="permission-badge missing" onclick="nativeRequestBattery()">Enable</span>
+            </div>
+
+            <!-- Exact Alarm -->
+            <div class="permission-row">
+              <div class="permission-info">
+                <span class="permission-title">⏰ Exact Alarms</span>
+                <span class="permission-desc">Wakes phone at the precise second (AlarmManager)</span>
+              </div>
+              <span id="perm-badge-exact" class="permission-badge missing" onclick="nativeRequestExactAlarm()">Enable</span>
+            </div>
+
+            <!-- Notifications -->
+            <div class="permission-row">
+              <div class="permission-info">
+                <span class="permission-title">🔔 Alarm Notifications</span>
+                <span class="permission-desc">High-priority full-screen alerts</span>
+              </div>
+              <span id="perm-badge-notif" class="permission-badge missing" onclick="nativeRequestNotifications()">Enable</span>
+            </div>
+
+            <!-- Lockscreen Overlay -->
+            <div class="permission-row">
+              <div class="permission-info">
+                <span class="permission-title">📱 Lockscreen Pop-up</span>
+                <span class="permission-desc">Show full alarm screen when phone is locked</span>
+              </div>
+              <span id="perm-badge-overlay" class="permission-badge missing" onclick="nativeRequestOverlay()">Enable</span>
+            </div>
+
+            <!-- Samsung Specific Device Care -->
+            <div id="perm-row-samsung" class="permission-row" style="display: none;">
+              <div class="permission-info">
+                <span class="permission-title">🌌 Samsung Device Care</span>
+                <span class="permission-desc">Ensure app is not in "Deep sleeping apps"</span>
+              </div>
+              <span class="permission-badge missing" onclick="nativeOpenSamsungDeviceCare()">Check</span>
+            </div>
+
+            <!-- 5-Second Test Button -->
+            <button class="btn-test-native-alarm" onclick="runNative5SecTest()">
+              <span>🔔</span>
+              <span>Test Real Phone Alarm (5s Lock Screen Test)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section-title">
+          <span>⚙️ Device Permissions & Local Storage</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+          <button class="btn-secondary-glass" onclick="requestNotificationPermission()">
+            🔔 Request Push Notifications Permission
+          </button>
+          <button class="btn-secondary-glass" onclick="exportDataBackup()">
+            💾 Export My Data (JSON Backup)
+          </button>
+          <label class="btn-secondary-glass" style="display: block; text-align: center; cursor: pointer;">
+            📥 Import My Data (Restore Backup)
+            <input type="file" accept=".json" style="display: none;" onchange="importDataBackup(this)">
+          </label>
+        </div>
+
+        <div style="text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 10px;">
+          🔒 100% Local-First Data: All settings, streaks, and sessions remain strictly on your device.
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="app-nav-bar">
+      <button class="nav-item active" data-view="home-view" onclick="switchView('home-view')">
+        <span class="nav-item-icon">🏠</span>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-view="library-view" onclick="switchView('library-view')">
+        <span class="nav-item-icon">📚</span>
+        <span>10 Tools</span>
+      </button>
+      <button class="nav-item" data-view="history-view" onclick="switchView('history-view')">
+        <span class="nav-item-icon">🥠</span>
+        <span>Cookie Jar</span>
+      </button>
+      <button class="nav-item" data-view="alarms-view" onclick="switchView('alarms-view')">
+        <span class="nav-item-icon">⏰</span>
+        <span>Alarms</span>
+      </button>
+    </nav>
+
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <!-- MODALS & CEREMONIES                                                   -->
+  <!-- ===================================================================== -->
+
+  <!-- 1. SPIRIT SELECTION CEREMONY MODAL -->
+  <div id="spirit-ceremony-modal" class="modal-overlay">
+    <div class="ceremony-card">
+      <div class="ceremony-orb-container">
+        <div class="spinning-ring"></div>
+        <div class="spinning-ring reverse"></div>
+        <div id="ceremony-orb-icon" class="ceremony-orb">✨</div>
+      </div>
+
+      <div class="ceremony-tag">Spirit Has Decided</div>
+      <h3 id="ceremony-tool-title" class="chosen-tool-title">Seeking Guidance...</h3>
+      
+      <div id="ceremony-tool-quote" class="chosen-tool-quote">
+        Aligning with your highest vibration...
+      </div>
+
+      <div class="locked-notice-pill">
+        🔒 Selection is locked for this session
+      </div>
+
+      <div class="ceremony-actions">
+        <button id="ceremony-start-btn" class="btn-primary-glow" onclick="startPracticeFromSpirit()">
+          Begin 5-Minute Practice
+        </button>
+        <button class="btn-secondary-glass" onclick="openPostponeModal()">
+          Can't Do It Right Now? Postpone
+        </button>
+        <button class="btn-secondary-glass" style="border-color: transparent; color: var(--text-muted); font-size: 13px;" onclick="closeSpiritCeremonyModal()">
+          ✕ Close / Back to Home
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 2. POSTPONE / BUSY OPTIONS MODAL -->
+  <div id="postpone-modal" class="modal-overlay">
+    <div class="ceremony-card" style="border-color: rgba(168, 85, 247, 0.6);">
+      <div style="font-size: 36px; margin-bottom: 10px;">🌙</div>
+      <h3 style="font-family: var(--font-serif); font-size: 20px; color: white; margin-bottom: 6px;">
+        When Would You Like To Practice?
+      </h3>
+      <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 20px;">
+        Missed reminders are never a failure. Postpone gracefully to maintain your momentum.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn-primary-glow" style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);" onclick="postponeToTonight()">
+          🌙 Do It Tonight (Bedtime Queue)
+        </button>
+        <button class="btn-secondary-glass" onclick="snoozeSession(15)">
+          ⏰ Remind Me in 15 Minutes
+        </button>
+        <button class="btn-secondary-glass" onclick="snoozeSession(30)">
+          ⏰ Remind Me in 30 Minutes
+        </button>
+        <button class="btn-secondary-glass" onclick="snoozeSession(60)">
+          ⏰ Remind Me in 1 Hour
+        </button>
+        <button class="btn-secondary-glass" style="border-color: transparent; color: var(--text-muted);" onclick="closePostponeModal()">
+          Cancel / Resume Practice
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 3. SESSION COMPLETED CELEBRATION MODAL -->
+  <div id="session-completed-modal" class="modal-overlay">
+    <div class="ceremony-card">
+      <div style="font-size: 46px; margin-bottom: 12px;">🌟</div>
+      <div class="ceremony-tag">Practice Complete</div>
+      <h3 id="completed-count-heading" class="chosen-tool-title">1 of 5 Completed Today!</h3>
+      <p id="completed-subtext" style="font-size: 13px; color: #cbd5e1; margin-bottom: 20px; line-height: 1.4;">
+        You invested 5 powerful minutes in high vibration.
+      </p>
+
+      <div id="completed-daily-reward-unlock" style="display: none; background: rgba(245, 195, 68, 0.15); border: 1px solid var(--gold-primary); border-radius: var(--radius-md); padding: 14px; margin-bottom: 20px;">
+        <div style="font-size: 24px; margin-bottom: 4px;">🥠</div>
+        <div style="font-weight: 800; font-size: 14px; color: var(--gold-light);">Daily Goal Reached (5/5)!</div>
+        <div style="font-size: 12px; color: #e2e8f0; margin-bottom: 10px;">Your Daily Fortune Cookie reward is unlocked!</div>
+        <button class="btn-primary-glow" style="padding: 10px 18px; font-size: 13px;" onclick="closeCompletedModal(); openDailyRewardCeremony();">
+          Crack Your Fortune Cookie
+        </button>
+      </div>
+
+      <button class="btn-primary-glow" onclick="closeCompletedModal()">
+        Return to Home
+      </button>
+    </div>
+  </div>
+
+
+  <!-- 4. DAILY REWARD FORTUNE COOKIE CEREMONY MODAL -->
+  <div id="daily-reward-modal" class="modal-overlay">
+    <div class="reward-modal-card">
+      <div class="reward-stars-badge">✨ Daily 5/5 Reward Unlocked ✨</div>
+      <h3 class="reward-title">The Magician's Fortune</h3>
+      <div class="reward-subtitle">Tap the divine fortune cookie to reveal today's miracle prophecy</div>
+
+      <div class="cookie-interactive-area" onclick="crackFortuneCookie()">
+        <svg id="fortune-cookie-graphic" class="cookie-svg-wrapper" viewBox="0 0 200 160">
+          <defs>
+            <linearGradient id="cookieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fed7aa" />
+              <stop offset="40%" stop-color="#f59e0b" />
+              <stop offset="100%" stop-color="#b45309" />
+            </linearGradient>
+          </defs>
+          <!-- Left crescent half -->
+          <path d="M40 90 C30 50 70 20 100 40 C70 60 50 110 90 130 C60 130 45 110 40 90 Z" fill="url(#cookieGrad)" stroke="#78350f" stroke-width="2"/>
+          <!-- Right crescent half -->
+          <path d="M160 90 C170 50 130 20 100 40 C130 60 150 110 110 130 C140 130 155 110 160 90 Z" fill="url(#cookieGrad)" stroke="#78350f" stroke-width="2"/>
+          <!-- Center Fold -->
+          <path d="M100 40 Q95 85 100 130" stroke="#78350f" stroke-width="4" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+
+      <div id="cookie-tap-hint" class="cookie-tap-hint">
+        👆 Tap Cookie to Crack Open
+      </div>
+
+      <!-- Revealed Fortune Paper Slip -->
+      <div id="revealed-fortune-slip" class="revealed-fortune-slip">
+        <div id="fortune-slip-tag" class="slip-tag">Miracle Prophecy</div>
+        <div id="fortune-slip-quote" class="slip-text">
+          "You are the magician. Today you shifted reality from fear to light."
+        </div>
+        <div class="slip-affirmation">— Spirit's Positivity Challenge</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn-primary-glow" onclick="closeDailyRewardModal()">
+          Collect & Save to Cookie Jar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- 4.5. SACRED TEACHING DOCUMENT MODAL ("SPIRIT'S POSITIVITY CHALLENGE") -->
+  <!-- ================================================================= -->
+  <div id="teaching-doc-modal" class="modal-overlay">
+    <div class="teaching-modal-card">
+      <div class="teaching-modal-header">
+        <div class="teaching-header-text">
+          <h3>SPIRIT’S POSITIVITY CHALLENGE</h3>
+          <p>By GD • The Sacred Purpose of This App</p>
+        </div>
+        <button class="teaching-close-btn" onclick="closeTeachingModal()" title="Close Reader">✕</button>
+      </div>
+
+      <div class="teaching-modal-body">
+
+        <!-- Highlight Callout -->
+        <div class="teaching-callout">
+          "Our job as sadhaks is to deny reality to negativity and doom in this moment."
+        </div>
+
+        <div class="teaching-section-heading">
+          <span>🌌</span> 1. The Call & The Collective Shift
+        </div>
+        <p style="margin-bottom: 12px;">
+          <strong>GD:</strong> Currently, there’s a tired, hopeless <em>‘whatever’</em> feeling in the collective—<em>Nothing I do is going to make any difference so what’s the point? Hamara kuch nahin ho sakta. Sab khatam ho gaya.</em>
+        </p>
+        <p style="margin-bottom: 12px;">
+          The earth’s greatest glory is yet to come but a section of the media, especially social media, is presenting every shift as proof of end-times. Another part of social media is waiting for some savior: a solar flash or new technology or alien intervention. One side says nothing can be done, the other says someone else will do it for us. Both are doing the same work of making us feel bleak and hopeless.
+        </p>
+        <p style="margin-bottom: 12px; color: var(--gold-light); font-weight: 600;">
+          Our job as sadhaks is to align and agree with neither side.<br>
+          Our job is to deny reality to negativity and doom in this moment.
+        </p>
+        <p style="margin-bottom: 12px;">
+          The collective darkness is heavy right now so it feels like it's harder to get out of it at times. But the contrast, whenever you do step out, is equally fantastic. When you rise out of it, you instantly feel light and happy.
+        </p>
+        <p style="margin-bottom: 16px;">
+          Anytime I get any negative thought these days, Spirit pauses me and says <em>"Okay, now is the time to go out and do something positive for five minutes."</em> Then I go out to the balcony and don’t come back inside for five minutes, until the rampage of positivity is done.
+        </p>
+
+        <div class="teaching-section-heading">
+          <span>🧙‍♂️</span> 2. The 5x5 Practice & The Magician's Law
+        </div>
+        <p style="margin-bottom: 12px;">
+          The practice Spirit is suggesting for all of us now is to be <strong>actively positive five times a day for five minutes each</strong>.
+        </p>
+        <p style="margin-bottom: 12px;">
+          That’s less than half an hour in a day. Whenever you get stuck in any problem—with your family, your neighbour, on the street—remember you have five to complete. Instead of going into panic or depression, argument or analysis, go straight into prayer, blessing and manifestation.
+        </p>
+        <p style="margin-bottom: 12px;">
+          If you complete five every day, you will have done <strong>150 prayers and blessings in a month</strong>, and you will see the miracles it brings into your life. It’s so simple: <strong>30 minutes a day for 30 days</strong>. No blaming God, no blaming spirituality, no blaming the world—
+        </p>
+        
+        <div class="teaching-callout" style="border-left-color: #38bdf8; color: #bae6fd;">
+          "You are the magician. You will either do the magic, or you will sit and cry. If you open up as a magician, you will see things changing around you. With 150 prayers and blessings, it’s impossible that things don’t change. It’s impossible."
+        </div>
+
+        <p style="margin-bottom: 16px;">
+          Why be afraid of the future when the power to create it is with us? We don’t use the power and then we blame God.
+        </p>
+
+        <div class="teaching-section-heading">
+          <span>✨</span> 3. The 10 Sacred Superpower Tools
+        </div>
+        <p style="margin-bottom: 14px; font-size: 13px; color: var(--text-secondary);">
+          If you are wondering what to do in those five minutes, here are ten options:
+        </p>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">1. New Ho’oponopono</div>
+          <div class="teaching-tool-desc">
+            <em>"I LOVE you. I SEE you. I HONOR you. I BLESS you."</em> Say these lines with feeling for different people who are in your field of Consciousness. If you are upset with someone, say it three times for that person. You can say this for your house, your business and your child’s school too.
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">2. Prayer (The Double Request)</div>
+          <div class="teaching-tool-desc">
+            Communicate from the heart to God, Spirit, Babaji, Jesus, Mother Mary, archangels and guides and ask for help in any matter. The highest form of prayer asks for God. It’s a double request: The first part says <em>"I am ready for God, please come."</em> The second part says that <em>"if there’s anything blocking this, please let me see it."</em>
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">3. Forgiveness (Dual-Forgiveness)</div>
+          <div class="teaching-tool-desc">
+            Spirit keeps reminding us: <em>Grievance is the only thing that keeps you away from Heaven.</em> The desire to be angry at God takes away this ever-present Heaven. Forgiveness restores us to Heaven. So if you feel like you are unable to bless or pray for someone, go straight to dual-forgiveness. For example: <em>"I forgive you for being so scared and confused. I forgive me for being so scared and confused."</em>
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">4. Gratitude</div>
+          <div class="teaching-tool-desc">
+            Appreciate what you already have in your life in this moment: a roof over your head, food, family, clothes, money in the bank. That’s better than many on the planet right now. Be grateful for that.
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">5. ‘Thank you God for…’ (Advance Manifestation)</div>
+          <div class="teaching-tool-desc">
+            Thanking God in advance is a manifestation technique to frame your problem as if it’s already solved, even though in ‘reality’ it’s not occurred already. For example: <em>"Thank you God in advance for fixing my knees. Thank you God in advance for making this house situation so easy for me."</em>
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">6. ‘Wouldn’t it be nice if…’</div>
+          <div class="teaching-tool-desc">
+            Instead of pushing others around you and the world to change, gently speak what you wish to see. For example: <em>"Wouldn’t it be nice if my son could love himself instead of feeling guilty? Wouldn’t it be nice if my mother could forgive my father?"</em>
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">7. Affirmations</div>
+          <div class="teaching-tool-desc">
+            Speaking affirmation with quietness and confidence is very powerful. If the mind is in a fighting mood, don’t try to outshout the negativity with your positivity. That’s missing the point. If the resistance is too strong and you can’t bring yourself to think of any affirmations, begin by listening to affirmations for five minutes. Even that will make you feel better.
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">8. Handing It Over</div>
+          <div class="teaching-tool-desc">
+            If nothing makes sense, call Spirit in. Surrender the situation. Don’t struggle to solve problems from a split mind which is confused and guilty. Be willing to see the problem—and you as you perceive yourself—are both illusions. Ask Spirit to dissolve all your errors of perception and to restore perfect peace.
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">9. Blessing</div>
+          <div class="teaching-tool-desc">
+            Speak blessings for individuals, for the world, even for AI. Whatever you are worried about in the world, you can bless. For example: <em>"May you be happy. May you experience the peace of God."</em>
+          </div>
+        </div>
+
+        <div class="teaching-tool-card">
+          <div class="teaching-tool-title">10. Declaring the Highest Truth</div>
+          <div class="teaching-tool-desc">
+            At the end of every session, always declare the highest truth for others. Otherwise we sometimes see them as victims even while we are blessing them or praying for them. So we can start with blessings but end with the highest declarations:<br>
+            • <em>I am the Light. You are the Light.</em><br>
+            • <em>I am complete, You are complete.</em><br>
+            • <em>I am a beautiful creation of God. You are a beautiful creation of God.</em><br>
+            • <em>I deserve perfect happiness. You deserve perfect happiness.</em><br>
+            • <em>I am one with God. You are one with God.</em><br>
+            • <em>So you don’t actually need anything—we are just dreaming a dream.</em><br>
+            • <em>May they recognise their oneness and completion and be happy in every situation.</em>
+          </div>
+        </div>
+
+        <div class="teaching-section-heading">
+          <span>🕯️</span> 4. Sustaining the Power & Being the Lighthouse
+        </div>
+        <p style="margin-bottom: 12px;">
+          These ten tools should be on hand through the day. The moment you feel a negative feeling coming on, catch one of them. See whichever one helps. You can do just one of these for the full five-minute session, or different combinations, whatever works for you.
+        </p>
+        <p style="margin-bottom: 12px;">
+          <strong>How do you know it’s working?</strong> If it’s fake mental positivity or bypassing, you won’t feel it. If the positive rampage is done properly, you get a feeling of the future in that moment. You will feel the joy of it.
+        </p>
+        <p style="margin-bottom: 12px;">
+          We have all the knowledge. Now we have to put it into practice. Who’s going to do it? <strong>Only you. We are magicians.</strong> But if the magician gets depressed and lazy and stops using his gifts, not only does he drown, he takes others down with him—and if he’s really clever, he tells the others that he’s drowning because of them!
+        </p>
+        <p style="margin-bottom: 12px;">
+          It’s not the situation that’s making us helpless—not using our gifts is what makes us helpless. So use these superpowers daily. <strong>If you don’t finish five during the day then in the night, before sleeping, finish the five.</strong> If you have a problem, apply it there first. If you have a smooth day, send blessings and prayers for others who are struggling around you: for your family, for your house, for your children and your staff.
+        </p>
+        <p style="margin-bottom: 12px;">
+          <strong>Stretch each session for five minutes.</strong> Sometimes we finish it too quickly. The power is in sustaining. If you can sustain a thought for around five minutes, it gets manifested. It’s an investment of half an hour a day. And if we can't give that much to God, how can we blame God and say spirituality failed? You failed yourself. You didn’t follow the basics. Being grateful for each day. Blessing others during the day. Forgiving others before sleep.
+        </p>
+        <p style="margin-bottom: 12px;">
+          The main function of all these is to <strong>interrupt the negative stream</strong>. Spirit says this is the responsibility of the seeker at this time. Otherwise, once the negativity starts, it goes on for hours. When the dark mood takes over, it feels easy and natural to slide with it. Changing direction takes a firm decision. But in five minutes, you can completely switch situations in your life and in your body. If we are in the right space, we can immediately shift the problem before the frequency of the problem settles down.
+        </p>
+        <p style="margin-bottom: 12px;">
+          The strange aches and pain we feel in our bodies are these frequencies which have settled down. We agreed with them over months and years. Slowly, slowly they began settling in the body. And now it confirms itself. It’s like you allowed a loudspeaker inside your house and now the loudspeaker is going to keep asserting <em>‘It’s all useless! It’s all hopeless!’</em>
+        </p>
+        <p style="margin-bottom: 12px;">
+          To step out of the collective gloom needs guts, the right tools and practise in handling this. A newcomer who has never experienced this shift will flounder. He will be carried away by the collective mind. We have been healing, clearing, meditating; it’s like we have been going to the gym everyday, and these muscles have developed. Now is the time to be diligent about it. Keep reminders on your phone for whatever times in the day work for you if required. Keep a timer for five minutes so you don’t stop after a few seconds.
+        </p>
+
+        <div class="teaching-callout" style="border-left-color: var(--gold-primary); color: var(--gold-light); margin-top: 18px;">
+          "Every time we do it, it becomes a little easier. When we start seeing the miracles in our life, we get more confidence. The highest miracle to ask for is that we can be in this miracle space 24/7. We want to expand the five minutes to the entire day. We were meant to be the lighthouse in this darkness."
+          <div style="text-align: right; margin-top: 6px; font-weight: bold;">— GD</div>
+        </div>
+
+      </div>
+
+      <div class="teaching-modal-footer">
+        <button class="btn-primary-glow" style="width: 100%;" onclick="closeTeachingModal()">
+          Close & Begin Practice ✨
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- 4.8. NATIVE ANDROID PERMISSIONS SETUP MODAL                      -->
+  <!-- ================================================================= -->
+  <div id="native-permissions-modal" class="modal-overlay">
+    <div class="ceremony-card" style="border-color: var(--gold-primary); max-width: 440px; text-align: left;">
+      <div style="text-align: center; margin-bottom: 12px;">
+        <span style="font-size: 40px;">⚡</span>
+        <h3 style="font-family: var(--font-serif); font-size: 19px; color: var(--gold-light); margin-top: 6px;">
+          Enable Background Alarms
+        </h3>
+        <p style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">
+          To ring reliably on Samsung & Android when locked or in Silent mode:
+        </p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+        <div class="permission-row" style="padding: 6px 0;">
+          <div class="permission-info">
+            <span class="permission-title">🔋 Run in Background</span>
+            <span class="permission-desc">Prevents Samsung from sleeping alarms</span>
+          </div>
+          <button class="btn-primary-glow" style="padding: 4px 12px; font-size: 11px;" onclick="nativeRequestBattery()">Grant</button>
+        </div>
+        <div class="permission-row" style="padding: 6px 0;">
+          <div class="permission-info">
+            <span class="permission-title">⏰ Exact Alarms</span>
+            <span class="permission-desc">Wakes phone at the scheduled second</span>
+          </div>
+          <button class="btn-primary-glow" style="padding: 4px 12px; font-size: 11px;" onclick="nativeRequestExactAlarm()">Grant</button>
+        </div>
+        <div class="permission-row" style="padding: 6px 0;">
+          <div class="permission-info">
+            <span class="permission-title">📱 Lockscreen Pop-up</span>
+            <span class="permission-desc">Shows alarm UI over locked screen</span>
+          </div>
+          <button class="btn-primary-glow" style="padding: 4px 12px; font-size: 11px;" onclick="nativeRequestOverlay()">Grant</button>
+        </div>
+        <div class="permission-row" style="padding: 6px 0;">
+          <div class="permission-info">
+            <span class="permission-title">🔔 Notifications</span>
+            <span class="permission-desc">High-priority alarm alerts</span>
+          </div>
+          <button class="btn-primary-glow" style="padding: 4px 12px; font-size: 11px;" onclick="nativeRequestNotifications()">Grant</button>
+        </div>
+      </div>
+
+      <button class="btn-primary-glow" style="width: 100%;" onclick="closeNativePermissionsModal()">
+        Done / All Set ✨
+      </button>
+    </div>
+  </div>
+
+
+  <!-- 5. ALARM RINGING OVERLAY -->
+  <div id="alarm-ringing-modal" class="alarm-ringing-modal">
+    <div class="alarm-bell-icon">🔔</div>
+    <h2 id="alarm-ringing-title" class="alarm-ringing-title">Time for Positivity Practice!</h2>
+    <div id="alarm-ringing-sub" class="alarm-ringing-sub">
+      Your scheduled 5-minute positivity reminder is ready.
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px;">
+      <button class="btn-primary-glow" onclick="startPracticeFromAlarm()">
+        ✨ Let Spirit Decide Now
+      </button>
+      <button class="btn-secondary-glass" onclick="snoozeSession(15); dismissAlarmRinging();">
+        ⏰ Remind in 15 Minutes
+      </button>
+      <button class="btn-secondary-glass" style="background: rgba(168, 85, 247, 0.2); border-color: #a855f7;" onclick="postponeToTonight(); dismissAlarmRinging();">
+        🌙 Do It Tonight (Bedtime)
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Floating Toast Notifications -->
+  <div id="toast-notice" class="toast-notice">
+    Notification text
+  </div>
+
+  <script src="app.js?v=8"></script>
+</body>
+</html>
