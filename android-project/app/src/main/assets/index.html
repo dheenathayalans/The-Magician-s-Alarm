@@ -9,14 +9,14 @@
   <meta name="description" content="The Magician's Alarm - Complete 5 daily 5-minute positivity rituals. Let Spirit decide your sacred tool and unlock daily fortune wisdom.">
   <title>The Magician's Alarm • Spirit's Positivity Challenge</title>
   
-  <link rel="manifest" href="manifest.json?v=2">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
-  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=2">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=8')
+        navigator.serviceWorker.register('./sw.js')
           .then(reg => {
             reg.update();
             console.log('ServiceWorker registered:', reg.scope);
@@ -42,7 +42,7 @@
     <header class="app-header">
       <div class="header-brand">
         <div class="header-icon-badge">
-          <img src="icon-192.png?v=2" alt="The Magician's Alarm Logo" class="header-logo-img">
+          <img src="icon-192.png" alt="The Magician's Alarm Logo" class="header-logo-img" onerror="this.onerror=null; this.src='logo.png';">
         </div>
         <div class="header-title-group">
           <h1>The Magician's Alarm</h1>
@@ -374,15 +374,18 @@
         <div class="settings-section-title">
           <span>🌙 Bedtime / Evening Queue Alarm</span>
         </div>
-        <div class="alarm-row-item" style="margin-bottom: 20px;">
-          <div class="alarm-time-group">
-            <input type="time" id="bedtime-alarm-input" class="alarm-input-time" value="22:00" onchange="updateBedtimeAlarm(this.value)">
+        <div id="bedtime-alarm-row" class="alarm-row-item" style="margin-bottom: 20px;">
+          <div class="alarm-time-group" onclick="editAlarmTime('bedtime')" style="cursor: pointer; flex: 1;">
+            <button type="button" id="bedtime-time-btn" class="alarm-time-btn" onclick="editAlarmTime('bedtime'); event.stopPropagation();" title="Tap to change bedtime alarm">
+              <span id="bedtime-time-text" class="alarm-time-text">10:00 PM</span>
+              <span class="alarm-edit-badge">✏️ Edit</span>
+            </button>
             <div>
               <div style="font-weight:700; font-size:13.5px; color:white;">Night Wrap-up</div>
               <div class="alarm-label-text">Surfaces unfinished sessions</div>
             </div>
           </div>
-          <label class="switch">
+          <label class="switch" style="margin-left: 10px;">
             <input type="checkbox" id="bedtime-alarm-toggle" checked onchange="toggleBedtimeAlarm(this.checked)">
             <span class="slider"></span>
           </label>
@@ -889,6 +892,60 @@
     </div>
   </div>
 
+  <!-- Custom Interactive Time Picker Modal -->
+  <div id="time-picker-modal" class="modal-overlay">
+    <div class="modal-card time-picker-card">
+      <div class="modal-header">
+        <h3 id="time-picker-title" style="font-family: var(--font-serif); font-size: 19px; color: var(--gold-light);">Set Reminder Time</h3>
+        <button class="modal-close-btn" onclick="closeTimePickerModal()">&times;</button>
+      </div>
+      <div class="time-picker-body">
+        <div class="time-picker-stepper-row">
+          <!-- Hours -->
+          <div class="stepper-col">
+            <label class="stepper-label">Hour</label>
+            <div class="stepper-controls">
+              <button class="stepper-btn" onclick="stepTimePickerHour(1)">▲</button>
+              <div id="picker-hour-display" class="stepper-val">07</div>
+              <button class="stepper-btn" onclick="stepTimePickerHour(-1)">▼</button>
+            </div>
+          </div>
+          <div class="stepper-colon">:</div>
+          <!-- Minutes -->
+          <div class="stepper-col">
+            <label class="stepper-label">Minute</label>
+            <div class="stepper-controls">
+              <button class="stepper-btn" onclick="stepTimePickerMinute(5)">▲</button>
+              <div id="picker-min-display" class="stepper-val">00</div>
+              <button class="stepper-btn" onclick="stepTimePickerMinute(-5)">▼</button>
+            </div>
+          </div>
+          <!-- AM / PM Toggle -->
+          <div class="stepper-col am-pm-col">
+            <label class="stepper-label">Period</label>
+            <div class="am-pm-toggle-box">
+              <button id="picker-am-btn" class="period-btn active" onclick="setTimePickerPeriod('AM')">AM</button>
+              <button id="picker-pm-btn" class="period-btn" onclick="setTimePickerPeriod('PM')">PM</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Preset Times -->
+        <div class="time-presets-row">
+          <button class="preset-chip" onclick="setTimePickerExplicit(7, 0, 'AM')">07:00 AM</button>
+          <button class="preset-chip" onclick="setTimePickerExplicit(10, 0, 'AM')">10:00 AM</button>
+          <button class="preset-chip" onclick="setTimePickerExplicit(1, 0, 'PM')">01:00 PM</button>
+          <button class="preset-chip" onclick="setTimePickerExplicit(4, 30, 'PM')">04:30 PM</button>
+          <button class="preset-chip" onclick="setTimePickerExplicit(7, 30, 'PM')">07:30 PM</button>
+          <button class="preset-chip" onclick="setTimePickerExplicit(10, 0, 'PM')">10:00 PM</button>
+        </div>
+
+        <button class="btn-primary-action" style="width: 100%; margin-top: 18px;" onclick="saveSelectedTimePicker()">
+          💾 Save &amp; Set Alarm
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- 5. ALARM RINGING OVERLAY -->
   <div id="alarm-ringing-modal" class="alarm-ringing-modal">
@@ -917,6 +974,6 @@
     Notification text
   </div>
 
-  <script src="app.js?v=8"></script>
+  <script src="app.js"></script>
 </body>
 </html>
