@@ -46,7 +46,7 @@ public class AlarmBridge {
     public void testNativeAlarm(int seconds) {
         mainHandler.post(() -> {
             NativeAlarmScheduler.scheduleQuickTestAlarm(activity, seconds);
-            Toast.makeText(activity, "🔔 Native alarm set in " + seconds + "s. Lock your phone now to test!", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Native alarm set in " + seconds + "s. Lock your phone now to test!", Toast.LENGTH_LONG).show();
         });
     }
 
@@ -97,6 +97,37 @@ public class AlarmBridge {
     public void openSamsungDeviceCare() {
         mainHandler.post(() -> {
             PermissionsHelper.openSamsungDeviceCare(activity);
+        });
+    }
+
+    @JavascriptInterface
+    public void openTimePicker(int alarmIndex, String currentTime) {
+        mainHandler.post(() -> {
+            int hour = 8;
+            int minute = 0;
+            try {
+                if (currentTime != null && currentTime.contains(":")) {
+                    String[] parts = currentTime.split(":");
+                    hour = Integer.parseInt(parts[0].trim());
+                    minute = Integer.parseInt(parts[1].trim());
+                }
+            } catch (Exception ignored) {}
+
+            android.app.TimePickerDialog dialog = new android.app.TimePickerDialog(
+                activity,
+                (view, selectedHour, selectedMinute) -> {
+                    String timeFormatted = String.format(java.util.Locale.US, "%02d:%02d", selectedHour, selectedMinute);
+                    webView.evaluateJavascript(
+                        String.format(java.util.Locale.US, "if (window.onNativeTimePicked) { window.onNativeTimePicked(%d, '%s'); }", alarmIndex, timeFormatted),
+                        null
+                    );
+                },
+                hour,
+                minute,
+                false
+            );
+            dialog.setTitle("Set Practice Reminder Time");
+            dialog.show();
         });
     }
 }
