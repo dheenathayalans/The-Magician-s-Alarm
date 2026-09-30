@@ -12,33 +12,23 @@ android {
         versionName "1.0.0"
     }
 
+        signingConfigs {
+        release {
+            if (file('release.keystore').exists()) {
+                storeFile file('release.keystore')
+                storePassword 'magiciansalarm123'
+                keyAlias 'upload'
+                keyPassword 'magiciansalarm123'
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (file('release.keystore').exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    lintOptions {
-        abortOnError false
-        checkReleaseBuilds false
-    }
-}
-
-configurations.all {
-    resolutionStrategy.force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-    resolutionStrategy.force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-    resolutionStrategy.force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
-}
-
-dependencies {
-    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.webkit:webkit:1.8.0'
-    implementation 'androidx.core:core:1.12.0'
-}
