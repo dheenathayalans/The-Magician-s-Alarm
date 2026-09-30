@@ -12,7 +12,7 @@ android {
         versionName "1.0.0"
     }
 
-        signingConfigs {
+    signingConfigs {
         release {
             if (file('release.keystore').exists()) {
                 storeFile file('release.keystore')
