@@ -36,7 +36,7 @@ jobs:
         gradle-version: '8.4'
         cache-disabled: true
 
-        - name: Generate Release Keystore
+    - name: Generate Release Keystore
       run: |
         keytool -genkey -v -keystore android-project/app/release.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass magiciansalarm123 -keypass magiciansalarm123 -dname "CN=The Magicians Alarm, OU=Mobile, O=GD, L=Chennai, S=TN, C=IN"
 
