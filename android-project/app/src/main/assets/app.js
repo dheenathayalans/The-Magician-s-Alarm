@@ -1260,13 +1260,56 @@ function updateTimePickerDisplay() {
   const amBtn = document.getElementById('picker-am-btn');
   const pmBtn = document.getElementById('picker-pm-btn');
 
-  if (hEl) hEl.textContent = pickerHour12 < 10 ? '0' + pickerHour12 : pickerHour12;
-  if (mEl) mEl.textContent = pickerMinute < 10 ? '0' + pickerMinute : pickerMinute;
+  const formattedH = pickerHour12 < 10 ? '0' + pickerHour12 : '' + pickerHour12;
+  const formattedM = pickerMinute < 10 ? '0' + pickerMinute : '' + pickerMinute;
+
+  if (hEl) {
+    if (hEl.tagName === 'INPUT') hEl.value = formattedH;
+    else hEl.textContent = formattedH;
+  }
+  if (mEl) {
+    if (mEl.tagName === 'INPUT') mEl.value = formattedM;
+    else mEl.textContent = formattedM;
+  }
 
   if (amBtn && pmBtn) {
     amBtn.classList.toggle('active', pickerPeriod === 'AM');
     pmBtn.classList.toggle('active', pickerPeriod === 'PM');
   }
+}
+
+function onKeypadHourInput(val) {
+  let num = parseInt(val, 10);
+  if (!isNaN(num)) {
+    if (num > 12) num = 12;
+    if (num < 1) num = 1;
+    pickerHour12 = num;
+  }
+}
+
+function onKeypadHourBlur(el) {
+  let num = parseInt(el.value, 10);
+  if (isNaN(num) || num < 1) num = 12;
+  if (num > 12) num = 12;
+  pickerHour12 = num;
+  el.value = num < 10 ? '0' + num : '' + num;
+}
+
+function onKeypadMinuteInput(val) {
+  let num = parseInt(val, 10);
+  if (!isNaN(num)) {
+    if (num > 59) num = 59;
+    if (num < 0) num = 0;
+    pickerMinute = num;
+  }
+}
+
+function onKeypadMinuteBlur(el) {
+  let num = parseInt(el.value, 10);
+  if (isNaN(num) || num < 0) num = 0;
+  if (num > 59) num = 59;
+  pickerMinute = num;
+  el.value = num < 10 ? '0' + num : '' + num;
 }
 
 function stepTimePickerHour(delta) {
@@ -1959,46 +2002,3 @@ function runNative5SecTest() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  initCosmicCanvas();
-  refreshHomeView();
-  startAlarmClockTicker();
-
-  // If running inside Android APK: sync alarms and check permissions
-  if (isNativeAndroidApp()) {
-    const androidSec = document.getElementById('android-permissions-section');
-    if (androidSec) androidSec.style.display = 'block';
-    syncAlarmsToNativeAndroid();
-    checkNativeAndroidPermissions();
-  }
-
-  // Unlock Web Audio on first user interaction anywhere (required by iOS / Android)
-  const unlockEvents = ['touchstart', 'touchend', 'click', 'keydown'];
-  const handleFirstInteraction = () => {
-    audioEngine.unlockAudio();
-    unlockEvents.forEach(evt => document.removeEventListener(evt, handleFirstInteraction));
-  };
-  unlockEvents.forEach(evt => document.addEventListener(evt, handleFirstInteraction, { passive: true }));
-
-  // Search in library
-  const searchInput = document.getElementById('library-search-input');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      renderToolsLibrary('All', e.target.value);
-    });
-  }
-
-  // Close teaching modal on backdrop click
-  const teachingModal = document.getElementById('teaching-doc-modal');
-  if (teachingModal) {
-    teachingModal.addEventListener('click', (e) => {
-      if (e.target === teachingModal) {
-        closeTeachingModal();
-      }
-    });
-  }
-
-  // Register service worker if supported
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(console.warn);
-  }
-});
