@@ -100,7 +100,7 @@ public class AlarmBridge {
         });
     }
 
-    @JavascriptInterface
+        @JavascriptInterface
     public void openTimePicker(int alarmIndex, String currentTime) {
         mainHandler.post(() -> {
             int initialHour = 8;
@@ -118,6 +118,10 @@ public class AlarmBridge {
                 (view, selectedHour, selectedMinute) -> {
                     if (view != null) {
                         view.clearFocus();
+                        int h = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) ? view.getHour() : view.getCurrentHour();
+                        int m = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) ? view.getMinute() : view.getCurrentMinute();
+                        selectedHour = h;
+                        selectedMinute = m;
                     }
                     String timeFormatted = String.format(java.util.Locale.US, "%02d:%02d", selectedHour, selectedMinute);
                     webView.evaluateJavascript(
@@ -128,10 +132,21 @@ public class AlarmBridge {
                 initialHour,
                 initialMinute,
                 false
-            );
+            ) {
+                @Override
+                public void onClick(android.content.DialogInterface dialogInterface, int which) {
+                    if (which == android.content.DialogInterface.BUTTON_POSITIVE) {
+                        android.view.View focus = getCurrentFocus();
+                        if (focus != null) {
+                            focus.clearFocus();
+                        }
+                    }
+                    super.onClick(dialogInterface, which);
+                }
+            };
 
             dialog.setTitle("Set Practice Reminder Time");
             dialog.show();
         });
     }
-}
+
