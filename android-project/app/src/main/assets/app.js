@@ -1279,6 +1279,7 @@ function updateTimePickerDisplay() {
 }
 
 function onKeypadHourInput(val) {
+  if (val === '') return;
   let num = parseInt(val, 10);
   if (!isNaN(num)) {
     if (num > 12) num = 12;
@@ -1296,6 +1297,7 @@ function onKeypadHourBlur(el) {
 }
 
 function onKeypadMinuteInput(val) {
+  if (val === '') return;
   let num = parseInt(val, 10);
   if (!isNaN(num)) {
     if (num > 59) num = 59;
@@ -1339,6 +1341,22 @@ function setTimePickerExplicit(h, m, p) {
 }
 
 function saveSelectedTimePicker() {
+  const hEl = document.getElementById('picker-hour-display');
+  const mEl = document.getElementById('picker-min-display');
+  if (hEl && hEl.value !== '') {
+    const parsedH = parseInt(hEl.value.trim(), 10);
+    if (!isNaN(parsedH)) {
+      if (parsedH >= 1 && parsedH <= 12) pickerHour12 = parsedH;
+      else if (parsedH === 0) pickerHour12 = 12;
+    }
+  }
+  if (mEl && mEl.value !== '') {
+    const parsedM = parseInt(mEl.value.trim(), 10);
+    if (!isNaN(parsedM) && parsedM >= 0 && parsedM <= 59) {
+      pickerMinute = parsedM;
+    }
+  }
+
   let h24 = pickerHour12 % 12;
   if (pickerPeriod === 'PM') h24 += 12;
   const timeStr = `${h24 < 10 ? '0' + h24 : h24}:${pickerMinute < 10 ? '0' + pickerMinute : pickerMinute}`;
@@ -1984,21 +2002,3 @@ function nativeOpenSamsungDeviceCare() {
 
 function runNative5SecTest() {
   if (isNativeAndroidApp()) {
-    window.AndroidAlarmBridge.testNativeAlarm(5);
-    showToast("🔔 5-second test alarm scheduled! Lock your phone screen NOW to watch it ring!");
-  } else {
-    showToast("Testing in browser... Get ready!");
-    setTimeout(() => {
-      triggerAlarmAlert({
-        label: "⚡ Real Phone Alarm 5s Test",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
-    }, 5000);
-  }
-}
-
-// ============================================================================
-// 16. INITIALIZATION ON DOM READY
-// ============================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
