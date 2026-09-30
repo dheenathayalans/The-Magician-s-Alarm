@@ -19,6 +19,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Auto-populate App Icons into Assets
+      run: |
+        mkdir -p android-project/app/src/main/assets
+        cp android-project/app/src/main/res/drawable/ic_launcher.png android-project/app/src/main/assets/icon-192.png || true
+        cp android-project/app/src/main/res/drawable/ic_launcher.png android-project/app/src/main/assets/logo.png || true
+        cp android-project/app/src/main/res/drawable/ic_launcher.png android-project/app/src/main/assets/favicon.png || true
+
     - name: Accept Android SDK Licenses
       run: |
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
