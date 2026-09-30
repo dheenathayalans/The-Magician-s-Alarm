@@ -1504,9 +1504,32 @@ input, textarea, select, button {
   font-weight: 800;
   color: #FFFFFF;
   min-width: 52px;
+  max-width: 70px;
   text-align: center;
   line-height: 1.1;
   font-family: monospace;
+}
+
+.stepper-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(245, 195, 68, 0.25);
+  border-radius: 8px;
+  padding: 4px 2px;
+  outline: none;
+  cursor: text;
+  -moz-appearance: textfield;
+}
+
+.stepper-input:focus {
+  border-color: var(--gold-primary);
+  background: rgba(245, 195, 68, 0.1);
+  box-shadow: 0 0 10px rgba(245, 195, 68, 0.3);
+}
+
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .stepper-colon {
@@ -2003,26 +2026,3 @@ input:checked + .slider:before {
   color: #fb7185;
   border: 1px solid rgba(251, 113, 133, 0.3);
   cursor: pointer;
-}
-
-.btn-test-native-alarm {
-  width: 100%;
-  margin-top: 14px;
-  background: linear-gradient(135deg, rgba(245, 195, 68, 0.15) 0%, rgba(217, 119, 6, 0.25) 100%);
-  border: 1px solid var(--gold-primary);
-  color: var(--gold-light);
-  padding: 12px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: var(--transition-fast);
-}
-
-.btn-test-native-alarm:active {
-  transform: scale(0.98);
-}
