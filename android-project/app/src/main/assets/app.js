@@ -1184,6 +1184,132 @@ function startToolFreestyle(toolId) {
 // 12. ALARMS & SOUND SETTINGS
 // ============================================================================
 
+function formatTime12h(time24) {
+  if (!time24) return '07:00 AM';
+  const parts = time24.split(':');
+  let h = parseInt(parts[0], 10);
+  const m = parts[1] || '00';
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12;
+  if (h === 0) h = 12;
+  return `${h < 10 ? '0' + h : h}:${m} ${ampm}`;
+}
+
+let activeEditingAlarmIndex = null;
+let pickerHour12 = 7;
+let pickerMinute = 0;
+let pickerPeriod = 'AM';
+
+function editAlarmTime(index) {
+  activeEditingAlarmIndex = index;
+  let currentTime = '07:00';
+  if (index === 'bedtime') {
+    currentTime = state.data.bedtimeAlarm ? state.data.bedtimeAlarm.time : '22:00';
+  } else if (state.data.alarms[index]) {
+    currentTime = state.data.alarms[index].time;
+  }
+
+  // 1. If running natively in Android APK, open Samsung native TimePickerDialog
+  if (isNativeAndroidApp() && window.AndroidAlarmBridge && typeof window.AndroidAlarmBridge.openTimePicker === 'function') {
+    window.AndroidAlarmBridge.openTimePicker(index === 'bedtime' ? 999 : index, currentTime);
+    return;
+  }
+
+  // 2. Open interactive In-App Time Picker Modal
+  openTimePickerModal(index, currentTime);
+}
+
+// Callback from native Android TimePickerDialog
+window.onNativeTimePicked = function(alarmIndex, time24) {
+  if (alarmIndex === 999 || alarmIndex === 'bedtime') {
+    updateBedtimeAlarm(time24);
+  } else if (typeof alarmIndex === 'number' && state.data.alarms[alarmIndex]) {
+    updateAlarmTime(alarmIndex, time24);
+  }
+  renderAlarmsView();
+};
+
+function openTimePickerModal(index, currentTime) {
+  const modal = document.getElementById('time-picker-modal');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('time-picker-title');
+  if (titleEl) {
+    titleEl.textContent = index === 'bedtime' ? 'Set Bedtime Queue Time' : `Set Reminder #${index + 1} Time`;
+  }
+
+  const parts = (currentTime || '07:00').split(':');
+  let h = parseInt(parts[0], 10) || 7;
+  pickerMinute = parseInt(parts[1], 10) || 0;
+  pickerPeriod = h >= 12 ? 'PM' : 'AM';
+  h = h % 12;
+  pickerHour12 = h === 0 ? 12 : h;
+
+  updateTimePickerDisplay();
+  modal.classList.add('active');
+}
+
+function closeTimePickerModal() {
+  const modal = document.getElementById('time-picker-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function updateTimePickerDisplay() {
+  const hEl = document.getElementById('picker-hour-display');
+  const mEl = document.getElementById('picker-min-display');
+  const amBtn = document.getElementById('picker-am-btn');
+  const pmBtn = document.getElementById('picker-pm-btn');
+
+  if (hEl) hEl.textContent = pickerHour12 < 10 ? '0' + pickerHour12 : pickerHour12;
+  if (mEl) mEl.textContent = pickerMinute < 10 ? '0' + pickerMinute : pickerMinute;
+
+  if (amBtn && pmBtn) {
+    amBtn.classList.toggle('active', pickerPeriod === 'AM');
+    pmBtn.classList.toggle('active', pickerPeriod === 'PM');
+  }
+}
+
+function stepTimePickerHour(delta) {
+  pickerHour12 += delta;
+  if (pickerHour12 > 12) pickerHour12 = 1;
+  if (pickerHour12 < 1) pickerHour12 = 12;
+  updateTimePickerDisplay();
+}
+
+function stepTimePickerMinute(delta) {
+  pickerMinute += delta;
+  if (pickerMinute >= 60) pickerMinute = 0;
+  if (pickerMinute < 0) pickerMinute = 55;
+  updateTimePickerDisplay();
+}
+
+function setTimePickerPeriod(p) {
+  pickerPeriod = p;
+  updateTimePickerDisplay();
+}
+
+function setTimePickerExplicit(h, m, p) {
+  pickerHour12 = h;
+  pickerMinute = m;
+  pickerPeriod = p;
+  updateTimePickerDisplay();
+}
+
+function saveSelectedTimePicker() {
+  let h24 = pickerHour12 % 12;
+  if (pickerPeriod === 'PM') h24 += 12;
+  const timeStr = `${h24 < 10 ? '0' + h24 : h24}:${pickerMinute < 10 ? '0' + pickerMinute : pickerMinute}`;
+
+  if (activeEditingAlarmIndex === 'bedtime') {
+    updateBedtimeAlarm(timeStr);
+  } else if (typeof activeEditingAlarmIndex === 'number') {
+    updateAlarmTime(activeEditingAlarmIndex, timeStr);
+  }
+
+  closeTimePickerModal();
+  renderAlarmsView();
+}
+
 function renderAlarmsView() {
   const alarmList = document.getElementById('alarms-list-container');
   if (alarmList) {
@@ -1192,14 +1318,17 @@ function renderAlarmsView() {
       const row = document.createElement('div');
       row.className = 'alarm-row-item';
       row.innerHTML = `
-        <div class="alarm-time-group">
-          <input type="time" class="alarm-input-time" value="${alarm.time}" onchange="updateAlarmTime(${idx}, this.value)">
+        <div class="alarm-time-group" onclick="editAlarmTime(${idx})" style="cursor: pointer; flex: 1;">
+          <button type="button" class="alarm-time-btn" onclick="editAlarmTime(${idx}); event.stopPropagation();" title="Tap to change alarm time">
+            <span class="alarm-time-text">${formatTime12h(alarm.time)}</span>
+            <span class="alarm-edit-badge">✏️ Edit</span>
+          </button>
           <div>
             <div style="font-weight:700; font-size:13.5px; color:white;">Reminder ${idx + 1}</div>
             <div class="alarm-label-text">${alarm.label}</div>
           </div>
         </div>
-        <label class="switch">
+        <label class="switch" style="margin-left: 10px;">
           <input type="checkbox" ${alarm.enabled ? 'checked' : ''} onchange="toggleAlarmEnabled(${idx}, this.checked)">
           <span class="slider"></span>
         </label>
@@ -1209,10 +1338,12 @@ function renderAlarmsView() {
   }
 
   // Bedtime alarm
-  const bedtimeInput = document.getElementById('bedtime-alarm-input');
+  const bedtimeText = document.getElementById('bedtime-time-text');
   const bedtimeToggle = document.getElementById('bedtime-alarm-toggle');
-  if (bedtimeInput && bedtimeToggle) {
-    bedtimeInput.value = state.data.bedtimeAlarm.time;
+  if (bedtimeText && state.data.bedtimeAlarm) {
+    bedtimeText.textContent = formatTime12h(state.data.bedtimeAlarm.time);
+  }
+  if (bedtimeToggle && state.data.bedtimeAlarm) {
     bedtimeToggle.checked = state.data.bedtimeAlarm.enabled;
   }
 
@@ -1225,7 +1356,7 @@ function updateAlarmTime(index, newTime) {
   state.save();
   updateNextAlarmDisplay();
   syncAlarmsToNativeAndroid();
-  showToast(`⏰ Reminder #${index + 1} updated to ${newTime}`);
+  showToast(`⏰ Reminder #${index + 1} set to ${formatTime12h(newTime)}`);
 }
 
 function toggleAlarmEnabled(index, enabled) {
@@ -1233,19 +1364,21 @@ function toggleAlarmEnabled(index, enabled) {
   state.save();
   updateNextAlarmDisplay();
   syncAlarmsToNativeAndroid();
+  showToast(enabled ? `🔔 Reminder #${index + 1} enabled` : `🔕 Reminder #${index + 1} disabled`);
 }
 
 function updateBedtimeAlarm(newTime) {
   state.data.bedtimeAlarm.time = newTime;
   state.save();
   syncAlarmsToNativeAndroid();
-  showToast(`🌙 Bedtime queue alarm updated to ${newTime}`);
+  showToast(`🌙 Bedtime alarm set to ${formatTime12h(newTime)}`);
 }
 
 function toggleBedtimeAlarm(enabled) {
   state.data.bedtimeAlarm.enabled = enabled;
   state.save();
   syncAlarmsToNativeAndroid();
+  showToast(enabled ? "🌙 Bedtime queue enabled" : "🌙 Bedtime queue disabled");
 }
 
 function renderSoundSelectionGrid() {
