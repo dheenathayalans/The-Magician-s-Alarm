@@ -1,3 +1,105 @@
+package com.magiciansalarm.app;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
+
+public class AlarmBridge {
+
+    private final Activity activity;
+    private final WebView webView;
+    private final Handler mainHandler;
+
+    public AlarmBridge(Activity activity, WebView webView) {
+        this.activity = activity;
+        this.webView = webView;
+        this.mainHandler = new Handler(Looper.getMainLooper());
+    }
+
+    @JavascriptInterface
+    public boolean isNativeAndroid() {
+        return true;
+    }
+
+    @JavascriptInterface
+    public void setNativeAlarm(int id, String timeStr, String label, String soundId, boolean enabled, String daysJson) {
+        mainHandler.post(() -> {
+            NativeAlarmScheduler.scheduleAlarm(activity, id, timeStr, label, soundId, enabled, daysJson);
+        });
+    }
+
+    @JavascriptInterface
+    public void cancelNativeAlarm(int id) {
+        mainHandler.post(() -> {
+            NativeAlarmScheduler.cancelAlarm(activity, id);
+        });
+    }
+
+    @JavascriptInterface
+    public void testNativeAlarm(int seconds) {
+        mainHandler.post(() -> {
+            NativeAlarmScheduler.scheduleQuickTestAlarm(activity, seconds);
+            Toast.makeText(activity, "Native alarm set in " + seconds + "s. Lock your phone now to test!", Toast.LENGTH_LONG).show();
+        });
+    }
+
+    @JavascriptInterface
+    public void stopNativeAlarmSound() {
+        mainHandler.post(() -> {
+            Intent stopIntent = new Intent(activity, AlarmService.class);
+            stopIntent.setAction(AlarmConstants.ACTION_DISMISS);
+            activity.startService(stopIntent);
+        });
+    }
+
+    @JavascriptInterface
+    public String getPermissionsStatus() {
+        JSONObject status = PermissionsHelper.getPermissionsStatus(activity);
+        return status.toString();
+    }
+
+    @JavascriptInterface
+    public void requestBatteryOptimization() {
+        mainHandler.post(() -> {
+            PermissionsHelper.requestIgnoreBatteryOptimizations(activity);
+        });
+    }
+
+    @JavascriptInterface
+    public void requestExactAlarmPermission() {
+        mainHandler.post(() -> {
+            PermissionsHelper.requestExactAlarmPermission(activity);
+        });
+    }
+
+    @JavascriptInterface
+    public void requestOverlayPermission() {
+        mainHandler.post(() -> {
+            PermissionsHelper.requestOverlayPermission(activity);
+        });
+    }
+
+    @JavascriptInterface
+    public void requestNotificationPermission() {
+        mainHandler.post(() -> {
+            PermissionsHelper.requestNotificationPermission(activity);
+        });
+    }
+
+    @JavascriptInterface
+    public void openSamsungDeviceCare() {
+        mainHandler.post(() -> {
+            PermissionsHelper.openSamsungDeviceCare(activity);
+        });
+    }
+
     @JavascriptInterface
     public void openTimePicker(int alarmIndex, String currentTime) {
         mainHandler.post(() -> {
@@ -14,13 +116,8 @@
             android.app.TimePickerDialog dialog = new android.app.TimePickerDialog(
                 activity,
                 (view, selectedHour, selectedMinute) -> {
-                    // Fix Samsung / Android keypad bug: force clearFocus so typed minutes are committed
                     if (view != null) {
                         view.clearFocus();
-                        int h = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M ? view.getHour() : view.getCurrentHour();
-                        int m = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M ? view.getMinute() : view.getCurrentMinute();
-                        selectedHour = h;
-                        selectedMinute = m;
                     }
                     String timeFormatted = String.format(java.util.Locale.US, "%02d:%02d", selectedHour, selectedMinute);
                     webView.evaluateJavascript(
@@ -34,16 +131,7 @@
             );
 
             dialog.setTitle("Set Practice Reminder Time");
-
-            // Explicitly clear focus when OK is clicked so software keyboard input is committed
-            dialog.setButton(android.content.DialogInterface.BUTTON_POSITIVE, "OK", (d, which) -> {
-                android.view.View focused = dialog.getCurrentFocus();
-                if (focused != null) {
-                    focused.clearFocus();
-                }
-                dialog.onClick(d, which);
-            });
-
             dialog.show();
         });
     }
+}
