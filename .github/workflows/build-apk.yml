@@ -36,13 +36,24 @@ jobs:
         gradle-version: '8.4'
         cache-disabled: true
 
-    - name: Build APK with Gradle
+        - name: Generate Release Keystore
+      run: |
+        keytool -genkey -v -keystore android-project/app/release.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass magiciansalarm123 -keypass magiciansalarm123 -dname "CN=The Magicians Alarm, OU=Mobile, O=GD, L=Chennai, S=TN, C=IN"
+
+    - name: Build APK and Play Store AAB Bundle
       working-directory: android-project
       run: |
-        gradle assembleDebug --stacktrace
+        gradle bundleRelease assembleDebug --stacktrace
+        find . -name "*.aab"
         find . -name "*.apk"
 
-    - name: Upload APK Artifact
+    - name: Upload Play Store AAB Bundle
+      uses: actions/upload-artifact@v4
+      with:
+        name: magicians-alarm-playstore-aab
+        path: '**/build/outputs/bundle/release/*.aab'
+
+    - name: Upload Test APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: magicians-alarm-debug-apk
