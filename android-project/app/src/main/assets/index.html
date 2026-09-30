@@ -906,7 +906,7 @@
             <label class="stepper-label">Hour</label>
             <div class="stepper-controls">
               <button type="button" class="stepper-btn" onclick="stepTimePickerHour(1)">▲</button>
-              <input type="number" id="picker-hour-display" class="stepper-val stepper-input" value="07" min="1" max="12" inputmode="numeric" onfocus="this.select()" oninput="onKeypadHourInput(this.value)" onblur="onKeypadHourBlur(this)">
+              <input type="text" id="picker-hour-display" class="stepper-val stepper-input" value="07" inputmode="numeric" pattern="[0-9]*" maxlength="2" onfocus="this.select()" oninput="onKeypadHourInput(this.value)" onblur="onKeypadHourBlur(this)">
               <button type="button" class="stepper-btn" onclick="stepTimePickerHour(-1)">▼</button>
             </div>
           </div>
@@ -916,7 +916,7 @@
             <label class="stepper-label">Minute</label>
             <div class="stepper-controls">
               <button type="button" class="stepper-btn" onclick="stepTimePickerMinute(5)">▲</button>
-              <input type="number" id="picker-min-display" class="stepper-val stepper-input" value="00" min="0" max="59" inputmode="numeric" onfocus="this.select()" oninput="onKeypadMinuteInput(this.value)" onblur="onKeypadMinuteBlur(this)">
+              <input type="text" id="picker-min-display" class="stepper-val stepper-input" value="00" inputmode="numeric" pattern="[0-9]*" maxlength="2" onfocus="this.select()" oninput="onKeypadMinuteInput(this.value)" onblur="onKeypadMinuteBlur(this)">
               <button type="button" class="stepper-btn" onclick="stepTimePickerMinute(-5)">▼</button>
             </div>
           </div>
