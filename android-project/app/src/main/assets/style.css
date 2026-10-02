@@ -2026,3 +2026,34 @@ input:checked + .slider:before {
   color: #fb7185;
   border: 1px solid rgba(251, 113, 133, 0.3);
   cursor: pointer;
+
+.btn-test-native-alarm {
+  width: 100%;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(245, 195, 68, 0.25) 0%, rgba(139, 92, 246, 0.35) 100%);
+  border: 1px solid var(--gold-primary);
+  color: #ffffff;
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 16px rgba(245, 195, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: var(--transition-fast);
+}
+
+.btn-test-native-alarm span {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.btn-test-native-alarm:active {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, rgba(245, 195, 68, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%);
+}
+
