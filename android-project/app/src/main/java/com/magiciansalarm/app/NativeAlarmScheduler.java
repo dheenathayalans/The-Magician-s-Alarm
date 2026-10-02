@@ -72,7 +72,7 @@ public class NativeAlarmScheduler {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(AlarmConstants.ACTION_FIRE_ALARM);
         intent.putExtra(AlarmConstants.EXTRA_ALARM_ID, 9999);
-        intent.putExtra(AlarmConstants.EXTRA_ALARM_LABEL, "⚡ Test Real Phone Alarm");
+        intent.putExtra(AlarmConstants.EXTRA_ALARM_LABEL, "Test Real Phone Alarm");
         intent.putExtra(AlarmConstants.EXTRA_ALARM_TIME, "Now");
         intent.putExtra(AlarmConstants.EXTRA_ALARM_SOUND, "singing_bowl");
 
@@ -99,6 +99,7 @@ public class NativeAlarmScheduler {
         if (alarmManager == null) return;
 
         Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.setAction(AlarmConstants.ACTION_FIRE_ALARM);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             flags |= PendingIntent.FLAG_IMMUTABLE;
@@ -108,6 +109,31 @@ public class NativeAlarmScheduler {
         alarmManager.cancel(pendingIntent);
         removeAlarmFromPrefs(context, id);
         Log.d(TAG, "Alarm " + id + " cancelled.");
+    }
+
+    public static void cancelAllAlarms(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) return;
+
+        SharedPreferences prefs = context.getSharedPreferences(AlarmConstants.PREFS_NAME, Context.MODE_PRIVATE);
+        String alarmsJson = prefs.getString(AlarmConstants.KEY_SAVED_ALARMS, "[]");
+        try {
+            JSONArray arr = new JSONArray(alarmsJson);
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject obj = arr.getJSONObject(i);
+                int id = obj.getInt("id");
+                cancelAlarm(context, id);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error cancelling all alarms: " + e.getMessage());
+        }
+
+        // Cancel standard IDs 1-5 and 888 explicitly
+        for (int id = 1; id <= 5; id++) {
+            cancelAlarm(context, id);
+        }
+        cancelAlarm(context, 888);
+        Log.d(TAG, "All alarms cancelled via Master Switch.");
     }
 
     public static void rescheduleAllAlarms(Context context) {

@@ -43,6 +43,13 @@ public class AlarmBridge {
     }
 
     @JavascriptInterface
+    public void cancelAllNativeAlarms() {
+        mainHandler.post(() -> {
+            NativeAlarmScheduler.cancelAllAlarms(activity);
+        });
+    }
+
+    @JavascriptInterface
     public void testNativeAlarm(int seconds) {
         mainHandler.post(() -> {
             NativeAlarmScheduler.scheduleQuickTestAlarm(activity, seconds);
@@ -100,7 +107,7 @@ public class AlarmBridge {
         });
     }
 
-        @JavascriptInterface
+    @JavascriptInterface
     public void openTimePicker(int alarmIndex, String currentTime) {
         mainHandler.post(() -> {
             int initialHour = 8;
@@ -149,6 +156,4 @@ public class AlarmBridge {
             dialog.show();
         });
     }
-
 }
-
