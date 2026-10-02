@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0b0d19">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -199,10 +199,22 @@
           </div>
         </div>
 
-        <!-- Next Alarm Status Badge -->
-        <div class="next-alarm-badge">
-          <span>🔔 Next Scheduled Alarm:</span>
-          <span id="next-alarm-display" class="next-alarm-time">08:00 (Calculating...)</span>
+        <!-- Next Alarm Status Badge & Quick Master Mute -->
+        <div class="next-alarm-badge" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+            <span id="next-alarm-bell-icon" style="font-size: 20px;">🔔</span>
+            <div style="min-width: 0;">
+              <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;">Scheduled Reminders</div>
+              <span id="next-alarm-display" class="next-alarm-time" style="font-size: 13.5px; font-weight: 700;">08:00 (Calculating...)</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+            <span id="master-alarm-status-badge-bottom" class="master-alarm-badge active" style="font-size: 10px;">Active</span>
+            <label class="switch" title="Toggle all alarms on/off for meetings or silent places">
+              <input type="checkbox" id="master-alarm-toggle-bottom" checked onchange="toggleMasterAlarms(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
 
       </section>

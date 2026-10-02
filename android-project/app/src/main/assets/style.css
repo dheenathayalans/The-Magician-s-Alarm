@@ -260,7 +260,7 @@ input, textarea, select, button {
   z-index: 10;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 18px 85px;
+  padding: 16px 18px calc(145px + env(safe-area-inset-bottom, 0px));
   scroll-behavior: smooth;
 }
 
@@ -1752,16 +1752,17 @@ input:checked + .slider:before {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 68px;
-  background: rgba(11, 14, 28, 0.88);
+  min-height: 64px;
+  background: rgba(11, 14, 28, 0.96);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 0 10px;
+  padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 52px);
   z-index: 50;
+  box-sizing: border-box;
 }
 
 .nav-item {

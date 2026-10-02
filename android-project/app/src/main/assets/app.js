@@ -1452,24 +1452,35 @@ function updateMasterAlarmSwitchUI() {
   const anyAlarmActive = state.data.alarms.some(a => a.enabled) || (state.data.bedtimeAlarm && state.data.bedtimeAlarm.enabled);
   const activeCount = state.data.alarms.filter(a => a.enabled).length;
 
-  // Home Screen Elements
+  // Home Screen Elements (Top Card)
   const masterToggleHome = document.getElementById('master-alarm-toggle');
   const masterBadgeHome = document.getElementById('master-alarm-status-badge');
   const masterSubtextHome = document.getElementById('master-alarm-subtext');
   const masterIconHome = document.getElementById('master-alarm-icon');
+
+  // Home Screen Elements (Bottom Status Card)
+  const masterToggleBottom = document.getElementById('master-alarm-toggle-bottom');
+  const masterBadgeBottom = document.getElementById('master-alarm-status-badge-bottom');
+  const nextBellIcon = document.getElementById('next-alarm-bell-icon');
 
   // Alarms Screen Elements
   const masterToggleAlarms = document.getElementById('master-alarm-toggle-alarms');
   const masterBadgeAlarms = document.getElementById('master-alarm-status-badge-alarms');
 
   if (masterToggleHome) masterToggleHome.checked = anyAlarmActive;
+  if (masterToggleBottom) masterToggleBottom.checked = anyAlarmActive;
   if (masterToggleAlarms) masterToggleAlarms.checked = anyAlarmActive;
 
   if (anyAlarmActive) {
     if (masterIconHome) masterIconHome.textContent = '🔔';
+    if (nextBellIcon) nextBellIcon.textContent = '🔔';
     if (masterBadgeHome) {
       masterBadgeHome.className = 'master-alarm-badge active';
       masterBadgeHome.textContent = `Active (${activeCount}/5)`;
+    }
+    if (masterBadgeBottom) {
+      masterBadgeBottom.className = 'master-alarm-badge active';
+      masterBadgeBottom.textContent = 'Active';
     }
     if (masterBadgeAlarms) {
       masterBadgeAlarms.className = 'master-alarm-badge active';
@@ -1480,9 +1491,14 @@ function updateMasterAlarmSwitchUI() {
     }
   } else {
     if (masterIconHome) masterIconHome.textContent = '🔕';
+    if (nextBellIcon) nextBellIcon.textContent = '🔕';
     if (masterBadgeHome) {
       masterBadgeHome.className = 'master-alarm-badge silent';
       masterBadgeHome.textContent = 'Silent (Muted)';
+    }
+    if (masterBadgeBottom) {
+      masterBadgeBottom.className = 'master-alarm-badge silent';
+      masterBadgeBottom.textContent = 'Muted';
     }
     if (masterBadgeAlarms) {
       masterBadgeAlarms.className = 'master-alarm-badge silent';
@@ -1503,6 +1519,16 @@ function toggleMasterAlarms(enableAll) {
     };
     state.data.alarms.forEach(a => a.enabled = false);
     if (state.data.bedtimeAlarm) state.data.bedtimeAlarm.enabled = false;
+
+    // Immediately cancel all alarms natively in Android AlarmManager
+    if (window.AndroidAlarmBridge && typeof window.AndroidAlarmBridge.cancelAllNativeAlarms === 'function') {
+      try {
+        window.AndroidAlarmBridge.cancelAllNativeAlarms();
+      } catch (err) {
+        console.warn("Failed to cancelAllNativeAlarms:", err);
+      }
+    }
+
     showToast("🔕 All alarms muted for meetings / quiet time");
   } else {
     // Restore previous configuration or enable all
