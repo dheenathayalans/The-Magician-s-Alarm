@@ -398,21 +398,21 @@
           <!-- Rendered by JS -->
         </div>
 
-        <!-- Android & Samsung Native Permissions Section -->
+               <!-- Android & Device Native Permissions Section -->
         <div id="android-permissions-section" style="display: none;">
           <div class="settings-section-title">
-            <span>⚡ Android & Samsung Alarm Permissions</span>
+            <span>⚡ Android Alarm &amp; Battery Permissions</span>
           </div>
           <div class="native-permissions-card">
             <div style="font-size: 11.5px; color: var(--gold-light); margin-bottom: 12px; line-height: 1.4;">
               🛡️ To guarantee your alarms ring over the lock screen, even in Silent Mode and when the phone is sleeping, enable these permissions:
             </div>
 
-            <!-- Battery Optimization (Samsung Sleeping Apps) -->
+            <!-- Battery Optimization / Background Run -->
             <div class="permission-row">
               <div class="permission-info">
                 <span class="permission-title">🔋 Run in Background</span>
-                <span class="permission-desc">Exempt from Battery Saver / Samsung Sleeping Apps</span>
+                <span class="permission-desc">Exempt from Battery Saver &amp; Sleeping Apps</span>
               </div>
               <span id="perm-badge-battery" class="permission-badge missing" onclick="nativeRequestBattery()">Enable</span>
             </div>
@@ -444,13 +444,13 @@
               <span id="perm-badge-overlay" class="permission-badge missing" onclick="nativeRequestOverlay()">Enable</span>
             </div>
 
-            <!-- Samsung Specific Device Care -->
+            <!-- All Android Device Background Settings -->
             <div id="perm-row-samsung" class="permission-row" style="display: none;">
               <div class="permission-info">
-                <span class="permission-title">🌌 Samsung Device Care</span>
-                <span class="permission-desc">Ensure app is not in "Deep sleeping apps"</span>
+                <span class="permission-title">⚙️ Background &amp; Battery Settings</span>
+                <span class="permission-desc">Ensure app is set to "Unrestricted" and not sleeping</span>
               </div>
-              <span class="permission-badge missing" onclick="nativeOpenSamsungDeviceCare()">Check</span>
+              <span class="permission-badge granted" style="cursor: pointer; background: rgba(245, 195, 68, 0.15); color: var(--gold-light); border-color: rgba(245, 195, 68, 0.4);" onclick="nativeOpenSamsungDeviceCare()">Open</span>
             </div>
 
             <!-- 5-Second Test Button -->
@@ -462,12 +462,9 @@
         </div>
 
         <div class="settings-section-title">
-          <span>⚙️ Device Permissions & Local Storage</span>
+          <span>💾 Data Backup &amp; Storage</span>
         </div>
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
-          <button class="btn-secondary-glass" onclick="requestNotificationPermission()">
-            🔔 Request Push Notifications Permission
-          </button>
           <button class="btn-secondary-glass" onclick="exportDataBackup()">
             💾 Export My Data (JSON Backup)
           </button>
@@ -475,7 +472,7 @@
             📥 Import My Data (Restore Backup)
             <input type="file" accept=".json" style="display: none;" onchange="importDataBackup(this)">
           </label>
-        </div>
+        </div>        
 
         <div style="text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 10px;">
           🔒 100% Local-First Data: All settings, streaks, and sessions remain strictly on your device.
