@@ -87,6 +87,24 @@
           </div>
         </div>
 
+        <!-- Master Alarm / Silent Meeting Mode Switch -->
+        <div class="master-alarm-card">
+          <div class="master-alarm-left">
+            <div id="master-alarm-icon" class="master-alarm-icon">🔔</div>
+            <div class="master-alarm-info">
+              <div class="master-alarm-title-row">
+                <span class="master-alarm-title">Master Alarm Switch</span>
+                <span id="master-alarm-status-badge" class="master-alarm-badge active">Active (5/5)</span>
+              </div>
+              <div id="master-alarm-subtext" class="master-alarm-subtext">Toggle all alarms off for meetings or silent places</div>
+            </div>
+          </div>
+          <label class="switch master-switch-control" title="Toggle all alarms on/off for meetings or silent places">
+            <input type="checkbox" id="master-alarm-toggle" checked onchange="toggleMasterAlarms(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
         <!-- Daily 5x5 Progress Tracker Card -->
         <div class="progress-card">
           <div class="progress-header">
@@ -364,6 +382,24 @@
           Configure up to 5 daily positivity reminders and your bedtime queue.
         </p>
 
+        <!-- Master Alarm Control in Alarms View -->
+        <div class="master-alarm-card">
+          <div class="master-alarm-left">
+            <div id="master-alarm-icon-alarms" class="master-alarm-icon">⚡</div>
+            <div class="master-alarm-info">
+              <div class="master-alarm-title-row">
+                <span class="master-alarm-title">Master Alarm Switch</span>
+                <span id="master-alarm-status-badge-alarms" class="master-alarm-badge active">Active (5/5)</span>
+              </div>
+              <div class="master-alarm-subtext">Toggle all 5 practice reminders &amp; bedtime at once</div>
+            </div>
+          </div>
+          <label class="switch master-switch-control" title="Toggle all alarms on/off">
+            <input type="checkbox" id="master-alarm-toggle-alarms" checked onchange="toggleMasterAlarms(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
         <div class="settings-section-title">
           <span>⏰ 5 Daily Practice Reminders</span>
         </div>
@@ -398,7 +434,7 @@
           <!-- Rendered by JS -->
         </div>
 
-               <!-- Android & Device Native Permissions Section -->
+        <!-- Android & Device Native Permissions Section -->
         <div id="android-permissions-section" style="display: none;">
           <div class="settings-section-title">
             <span>⚡ Android Alarm &amp; Battery Permissions</span>
@@ -454,9 +490,8 @@
             </div>
 
             <!-- 5-Second Test Button -->
-            <button class="btn-test-native-alarm" onclick="runNative5SecTest()">
-              <span>🔔</span>
-              <span>Test Real Phone Alarm (5s Lock Screen Test)</span>
+            <button type="button" id="btn-native-5s-test" class="btn-secondary-glass btn-test-native-alarm" style="width: 100%; margin-top: 14px; background: rgba(255, 255, 255, 0.05) !important; background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(245, 195, 68, 0.35) !important; color: var(--gold-light) !important; -webkit-appearance: none !important; appearance: none !important; box-shadow: none !important; outline: none !important;" onclick="runNative5SecTest()">
+              <span style="color: var(--gold-light) !important; background: transparent !important; background-color: transparent !important;">🔔 Test Real Phone Alarm (5s Lock Screen Test)</span>
             </button>
           </div>
         </div>
@@ -472,7 +507,7 @@
             📥 Import My Data (Restore Backup)
             <input type="file" accept=".json" style="display: none;" onchange="importDataBackup(this)">
           </label>
-        </div>        
+        </div>
 
         <div style="text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 10px;">
           🔒 100% Local-First Data: All settings, streaks, and sessions remain strictly on your device.

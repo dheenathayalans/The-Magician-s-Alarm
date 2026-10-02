@@ -814,8 +814,9 @@ function refreshHomeView() {
     }
   }
 
-  // Next Alarm Snippet
+  // Next Alarm Snippet & Master Switch UI
   updateNextAlarmDisplay();
+  updateMasterAlarmSwitchUI();
 
   // Daily Fortune Cookie Unlocked Banner if 5 completed
   const rewardClaimBox = document.getElementById('daily-reward-claim-box');
@@ -881,9 +882,9 @@ function updateNextAlarmDisplay() {
   if (nextAlarm) {
     const hoursAway = Math.floor(minDiff / 60);
     const minsAway = minDiff % 60;
-    nextAlarmEl.textContent = `${nextAlarm.time} (${hoursAway > 0 ? hoursAway + 'h ' : ''}${minsAway}m away)`;
+    nextAlarmEl.textContent = `${formatTime12h(nextAlarm.time)} (${hoursAway > 0 ? hoursAway + 'h ' : ''}${minsAway}m away)`;
   } else {
-    nextAlarmEl.textContent = "No active alarms";
+    nextAlarmEl.textContent = "All alarms muted (Silent Mode)";
   }
 }
 
@@ -1410,6 +1411,9 @@ function renderAlarmsView() {
 
   // Sound selection grid
   renderSoundSelectionGrid();
+
+  // Update Master Switch UI
+  updateMasterAlarmSwitchUI();
 }
 
 function updateAlarmTime(index, newTime) {
@@ -1423,6 +1427,7 @@ function updateAlarmTime(index, newTime) {
 function toggleAlarmEnabled(index, enabled) {
   state.data.alarms[index].enabled = enabled;
   state.save();
+  updateMasterAlarmSwitchUI();
   updateNextAlarmDisplay();
   syncAlarmsToNativeAndroid();
   showToast(enabled ? `🔔 Reminder #${index + 1} enabled` : `🔕 Reminder #${index + 1} disabled`);
@@ -1438,8 +1443,94 @@ function updateBedtimeAlarm(newTime) {
 function toggleBedtimeAlarm(enabled) {
   state.data.bedtimeAlarm.enabled = enabled;
   state.save();
+  updateMasterAlarmSwitchUI();
   syncAlarmsToNativeAndroid();
   showToast(enabled ? "🌙 Bedtime queue enabled" : "🌙 Bedtime queue disabled");
+}
+
+function updateMasterAlarmSwitchUI() {
+  const anyAlarmActive = state.data.alarms.some(a => a.enabled) || (state.data.bedtimeAlarm && state.data.bedtimeAlarm.enabled);
+  const activeCount = state.data.alarms.filter(a => a.enabled).length;
+
+  // Home Screen Elements
+  const masterToggleHome = document.getElementById('master-alarm-toggle');
+  const masterBadgeHome = document.getElementById('master-alarm-status-badge');
+  const masterSubtextHome = document.getElementById('master-alarm-subtext');
+  const masterIconHome = document.getElementById('master-alarm-icon');
+
+  // Alarms Screen Elements
+  const masterToggleAlarms = document.getElementById('master-alarm-toggle-alarms');
+  const masterBadgeAlarms = document.getElementById('master-alarm-status-badge-alarms');
+
+  if (masterToggleHome) masterToggleHome.checked = anyAlarmActive;
+  if (masterToggleAlarms) masterToggleAlarms.checked = anyAlarmActive;
+
+  if (anyAlarmActive) {
+    if (masterIconHome) masterIconHome.textContent = '🔔';
+    if (masterBadgeHome) {
+      masterBadgeHome.className = 'master-alarm-badge active';
+      masterBadgeHome.textContent = `Active (${activeCount}/5)`;
+    }
+    if (masterBadgeAlarms) {
+      masterBadgeAlarms.className = 'master-alarm-badge active';
+      masterBadgeAlarms.textContent = `Active (${activeCount}/5)`;
+    }
+    if (masterSubtextHome) {
+      masterSubtextHome.textContent = `All alarms active • Flip switch to mute for meetings or silent places`;
+    }
+  } else {
+    if (masterIconHome) masterIconHome.textContent = '🔕';
+    if (masterBadgeHome) {
+      masterBadgeHome.className = 'master-alarm-badge silent';
+      masterBadgeHome.textContent = 'Silent (Muted)';
+    }
+    if (masterBadgeAlarms) {
+      masterBadgeAlarms.className = 'master-alarm-badge silent';
+      masterBadgeAlarms.textContent = 'Silent (Muted)';
+    }
+    if (masterSubtextHome) {
+      masterSubtextHome.textContent = `All alarms silenced for meetings / quiet time • Tap to resume`;
+    }
+  }
+}
+
+function toggleMasterAlarms(enableAll) {
+  if (!enableAll) {
+    // Save current active configuration before muting
+    state.data.savedAlarmStates = {
+      alarms: state.data.alarms.map(a => ({ id: a.id, enabled: a.enabled })),
+      bedtime: state.data.bedtimeAlarm ? state.data.bedtimeAlarm.enabled : true
+    };
+    state.data.alarms.forEach(a => a.enabled = false);
+    if (state.data.bedtimeAlarm) state.data.bedtimeAlarm.enabled = false;
+    showToast("🔕 All alarms muted for meetings / quiet time");
+  } else {
+    // Restore previous configuration or enable all
+    if (state.data.savedAlarmStates && Array.isArray(state.data.savedAlarmStates.alarms)) {
+      const hasAnySavedActive = state.data.savedAlarmStates.alarms.some(s => s.enabled);
+      state.data.alarms.forEach(a => {
+        if (hasAnySavedActive) {
+          const saved = state.data.savedAlarmStates.alarms.find(s => s.id === a.id);
+          a.enabled = saved ? saved.enabled : true;
+        } else {
+          a.enabled = true;
+        }
+      });
+      if (state.data.bedtimeAlarm) {
+        state.data.bedtimeAlarm.enabled = state.data.savedAlarmStates.bedtime !== undefined ? state.data.savedAlarmStates.bedtime : true;
+      }
+    } else {
+      state.data.alarms.forEach(a => a.enabled = true);
+      if (state.data.bedtimeAlarm) state.data.bedtimeAlarm.enabled = true;
+    }
+    showToast("🔔 All alarms resumed & active!");
+  }
+
+  state.save();
+  updateMasterAlarmSwitchUI();
+  updateNextAlarmDisplay();
+  renderAlarmsView();
+  syncAlarmsToNativeAndroid();
 }
 
 function renderSoundSelectionGrid() {
@@ -1935,9 +2026,9 @@ function checkNativeAndroidPermissions() {
       }
     }
 
-    // Samsung Device Care row
+    // Background & Battery Settings row (for all Android phones)
     const rowSamsung = document.getElementById('perm-row-samsung');
-    if (rowSamsung && status.isSamsung) {
+    if (rowSamsung) {
       rowSamsung.style.display = 'flex';
     }
 
@@ -2063,4 +2154,3 @@ document.addEventListener('DOMContentLoaded', () => {
     navigator.serviceWorker.register('./sw.js').catch(console.warn);
   }
 });
-

@@ -144,6 +144,7 @@ input, textarea, select, button {
   background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
 }
 
+/* App Header */
 .app-header {
   position: relative;
   z-index: 20;
@@ -2025,13 +2026,114 @@ input:checked + .slider:before {
   color: #fb7185;
   border: 1px solid rgba(251, 113, 133, 0.3);
   cursor: pointer;
+}
 
+/* Master Alarm Switch Card (Home & Alarms views) */
+.master-alarm-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(22, 26, 50, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(245, 195, 68, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: var(--transition-smooth);
+}
+
+.master-alarm-card:hover {
+  border-color: rgba(245, 195, 68, 0.55);
+  background: rgba(26, 31, 60, 0.85);
+}
+
+.master-alarm-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.master-alarm-icon {
+  font-size: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(245, 195, 68, 0.12);
+  border: 1px solid rgba(245, 195, 68, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.master-alarm-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.master-alarm-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.master-alarm-title {
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+.master-alarm-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: var(--transition-fast);
+}
+
+.master-alarm-badge.active {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.master-alarm-badge.silent {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.master-alarm-subtext {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.master-switch-control {
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+#btn-native-5s-test,
 .btn-test-native-alarm {
   width: 100%;
   margin-top: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 195, 68, 0.35);
-  color: var(--gold-light);
+  background: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(245, 195, 68, 0.35) !important;
+  color: var(--gold-light) !important;
   padding: 12px 16px;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -2041,22 +2143,24 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: none;
-  -webkit-appearance: none;
-  appearance: none;
-  -webkit-tap-highlight-color: transparent;
-  outline: none;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
   transition: var(--transition-fast);
 }
 
+#btn-native-5s-test span,
 .btn-test-native-alarm span {
-  color: var(--gold-light);
-  background: transparent;
+  color: var(--gold-light) !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
-
+#btn-native-5s-test:active,
 .btn-test-native-alarm:active {
   transform: scale(0.98);
-  background: linear-gradient(135deg, rgba(245, 195, 68, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%);
+  background: rgba(245, 195, 68, 0.15) !important;
+  background-color: rgba(245, 195, 68, 0.15) !important;
 }
-
