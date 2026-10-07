@@ -2,7 +2,9 @@ package com.magiciansalarm.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -13,15 +15,23 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.util.Locale;
+
 public class MainActivity extends Activity {
 
+    private static MainActivity instance;
     private WebView webView;
     private AlarmBridge alarmBridge;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
 
         // Immersive dark status bar & full screen support
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -52,6 +62,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                syncMissedBedtimeQueue();
                 handleIntentExtras(getIntent());
             }
         });
@@ -66,10 +77,39 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        syncMissedBedtimeQueue();
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        syncMissedBedtimeQueue();
         handleIntentExtras(intent);
+    }
+
+    public void onMissedAlarmAdded(int count) {
+        runOnUiThread(() -> {
+            if (webView != null) {
+                webView.evaluateJavascript(
+                    String.format(Locale.US, "if (typeof addMissedSessionToBedtimeQueue === 'function') { addMissedSessionToBedtimeQueue(%d); }", count),
+                    null
+                );
+            }
+        });
+    }
+
+    private void syncMissedBedtimeQueue() {
+        try {
+            SharedPreferences prefs = getSharedPreferences(AlarmConstants.PREFS_NAME, Context.MODE_PRIVATE);
+            int queued = prefs.getInt(AlarmConstants.KEY_BEDTIME_QUEUE, 0);
+            if (queued > 0) {
+                prefs.edit().putInt(AlarmConstants.KEY_BEDTIME_QUEUE, 0).apply();
+                onMissedAlarmAdded(queued);
+            }
+        } catch (Exception ignored) {}
     }
 
     private void handleIntentExtras(Intent intent) {
@@ -77,8 +117,13 @@ public class MainActivity extends Activity {
 
         boolean openSpirit = intent.getBooleanExtra("auto_open_spirit", false);
         boolean addToBedtime = intent.getBooleanExtra("add_to_bedtime", false);
+        boolean fromMissed = intent.getBooleanExtra("from_missed_notification", false);
 
-        if (openSpirit) {
+        if (fromMissed) {
+            webView.postDelayed(() -> {
+                webView.evaluateJavascript("if (typeof showMissedSessionNotice === 'function') { showMissedSessionNotice(); }", null);
+            }, 600);
+        } else if (openSpirit) {
             webView.postDelayed(() -> {
                 webView.evaluateJavascript("if (typeof openSpiritCeremonyModal === 'function') { openSpiritCeremonyModal(); }", null);
             }, 500);
@@ -87,6 +132,12 @@ public class MainActivity extends Activity {
                 webView.evaluateJavascript("if (typeof postponeToTonight === 'function') { postponeToTonight(); }", null);
             }, 500);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (instance == this) instance = null;
+        super.onDestroy();
     }
 
     @Override

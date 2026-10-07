@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -14,7 +15,9 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -26,12 +29,16 @@ public class AlarmService extends Service {
 
     private static final String TAG = "AlarmService";
     private static final int NOTIFICATION_ID = 8888;
+    private static final int MISSED_NOTIFICATION_ID = 8889;
+    private static final long ALARM_TIMEOUT_DURATION_MS = 60 * 1000L; // Ring for 1 minute (60 seconds)
 
     private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
     private PowerManager.WakeLock wakeLock;
     private AudioManager audioManager;
     private AudioFocusRequest audioFocusRequest;
+    private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
+    private Runnable timeoutRunnable;
 
     @Override
     public void onCreate() {
@@ -45,7 +52,7 @@ public class AlarmService extends Service {
                 PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
                 "MagiciansAlarm::ServiceWakeLock"
             );
-            wakeLock.acquire(10 * 60 * 1000L); // 10 minutes maximum ringing timeout
+            wakeLock.acquire(2 * 60 * 1000L); // 2 minutes wake lock safety window
         }
     }
 
@@ -55,6 +62,10 @@ public class AlarmService extends Service {
 
         String action = intent.getAction();
         if (AlarmConstants.ACTION_DISMISS.equals(action)) {
+            if (timeoutRunnable != null) {
+                timeoutHandler.removeCallbacks(timeoutRunnable);
+                timeoutRunnable = null;
+            }
             stopAlarm();
             stopSelf();
             return START_NOT_STICKY;
@@ -62,7 +73,7 @@ public class AlarmService extends Service {
 
         int alarmId = intent.getIntExtra(AlarmConstants.EXTRA_ALARM_ID, 1);
         String label = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_LABEL);
-        if (label == null || label.isEmpty()) label = "Spirit Positivity Challenge";
+        if (label == null || label.isEmpty()) label = "Spirit's Positivity Challenge";
         String timeStr = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_TIME);
         if (timeStr == null) timeStr = "Now";
 
@@ -84,7 +95,7 @@ public class AlarmService extends Service {
             this, alarmId, alarmActivityIntent, pendingFlags
         );
 
-        // Action: Open Spirit Ceremony
+        // Action: Open Spirit's Ceremony
         Intent openAppIntent = new Intent(this, MainActivity.class);
         openAppIntent.setAction(AlarmConstants.ACTION_OPEN_SPIRIT);
         openAppIntent.putExtra("auto_open_spirit", true);
@@ -121,17 +132,30 @@ public class AlarmService extends Service {
         try {
             startActivity(alarmActivityIntent);
         } catch (Exception e) {
-            Log.e(TAG, "Direct startActivity error: " + e.getMessage());
+            Log.e(TAG, "Direct startActivity error (falling back to full screen intent): " + e.getMessage());
         }
 
         // Play looping alarm sound (rings even in Silent / Vibrate mode)
         startAlarmAudioAndVibration();
+
+        // Limit ringing duration to 1 minute (60 seconds)
+        if (timeoutRunnable != null) {
+            timeoutHandler.removeCallbacks(timeoutRunnable);
+        }
+        final int currentAlarmId = alarmId;
+        final String currentAlarmLabel = label;
+        timeoutRunnable = () -> {
+            Log.d(TAG, "Alarm rang for 1 minute with no user response. Stopping and adding to Bedtime Queue.");
+            handleMissedAlarmTimeout(currentAlarmId, currentAlarmLabel);
+        };
+        timeoutHandler.postDelayed(timeoutRunnable, ALARM_TIMEOUT_DURATION_MS);
 
         return START_STICKY;
     }
 
     private void startAlarmAudioAndVibration() {
         try {
+            // Request AudioFocus on USAGE_ALARM so it takes priority
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -141,6 +165,7 @@ public class AlarmService extends Service {
                 audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
                     .setAudioAttributes(audioAttributes)
                     .setOnAudioFocusChangeListener(focusChange -> {
+                        // Keep playing! Do not allow other apps to silence this sacred alarm.
                         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
                             try { mediaPlayer.start(); } catch (Exception ignored) {}
                         }
@@ -149,6 +174,7 @@ public class AlarmService extends Service {
                 audioManager.requestAudioFocus(audioFocusRequest);
             }
 
+            // Get default alarm sound, or notification/ringtone fallback
             Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
             if (alarmUri == null) {
                 alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -165,7 +191,7 @@ public class AlarmService extends Service {
 
             mediaPlayer.setDataSource(this, alarmUri);
             mediaPlayer.setAudioAttributes(audioAttributes);
-            mediaPlayer.setLooping(true);
+            mediaPlayer.setLooping(true); // Loop until user dismisses!
             mediaPlayer.prepare();
             mediaPlayer.start();
             Log.d(TAG, "Alarm sound started playing on USAGE_ALARM (Audible in silent mode).");
@@ -174,6 +200,7 @@ public class AlarmService extends Service {
             Log.e(TAG, "Error playing alarm sound: " + e.getMessage());
         }
 
+        // Loop vibration
         try {
             if (vibrator != null && vibrator.hasVibrator()) {
                 long[] pattern = { 0, 800, 400, 800, 400, 1000 };
@@ -192,6 +219,11 @@ public class AlarmService extends Service {
     }
 
     private void stopAlarm() {
+        if (timeoutRunnable != null) {
+            timeoutHandler.removeCallbacks(timeoutRunnable);
+            timeoutRunnable = null;
+        }
+
         if (mediaPlayer != null) {
             try {
                 if (mediaPlayer.isPlaying()) mediaPlayer.stop();
@@ -215,6 +247,88 @@ public class AlarmService extends Service {
 
         stopForeground(true);
         Log.d(TAG, "AlarmService stopped successfully.");
+    }
+
+    private void handleMissedAlarmTimeout(int alarmId, String label) {
+        // 1. Stop active audio, vibration, and foreground notification
+        stopAlarm();
+
+        // 2. Broadcast dismiss intent so AlarmActivity closes if currently visible
+        try {
+            Intent dismissIntent = new Intent(AlarmConstants.ACTION_DISMISS);
+            sendBroadcast(dismissIntent);
+        } catch (Exception e) {
+            Log.e(TAG, "Error broadcasting dismiss action: " + e.getMessage());
+        }
+
+        // 3. Add to Bedtime Queue count in SharedPreferences
+        try {
+            SharedPreferences prefs = getSharedPreferences(AlarmConstants.PREFS_NAME, Context.MODE_PRIVATE);
+            int currentPending = prefs.getInt(AlarmConstants.KEY_BEDTIME_QUEUE, 0);
+            prefs.edit().putInt(AlarmConstants.KEY_BEDTIME_QUEUE, currentPending + 1).apply();
+            Log.d(TAG, "Incremented bedtime queue pending count to " + (currentPending + 1));
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating bedtime queue count: " + e.getMessage());
+        }
+
+        // 4. Update MainActivity UI if active
+        try {
+            MainActivity mainActivity = MainActivity.getInstance();
+            if (mainActivity != null && !mainActivity.isFinishing()) {
+                mainActivity.onMissedAlarmAdded(1);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating active MainActivity: " + e.getMessage());
+        }
+
+        // 5. Post Missed Session Notification
+        postMissedSessionNotification(alarmId, label);
+
+        // 6. Stop service
+        stopSelf();
+    }
+
+    private void postMissedSessionNotification(int alarmId, String label) {
+        try {
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return;
+
+            createNotificationChannel();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.putExtra("from_missed_notification", true);
+            intent.putExtra("add_to_bedtime", true);
+
+            int pendingFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                pendingFlags |= PendingIntent.FLAG_IMMUTABLE;
+            }
+
+            PendingIntent contentIntent = PendingIntent.getActivity(
+                this, alarmId + 300, intent, pendingFlags
+            );
+
+            String title = "Missed Positivity Session 🌙";
+            String shortText = "You have missed a session so please do it whenever you are free.";
+            String longText = "You have missed a session so please do it whenever you are free. It has been added to your bedtime queue — please do it from the bedtime queue when you are free.";
+
+            Notification notification = new NotificationCompat.Builder(this, AlarmConstants.CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(shortText)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(longText))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setAutoCancel(true)
+                .setContentIntent(contentIntent)
+                .build();
+
+            nm.notify(MISSED_NOTIFICATION_ID, notification);
+            Log.d(TAG, "Posted missed session notification successfully.");
+        } catch (Exception e) {
+            Log.e(TAG, "Error posting missed session notification: " + e.getMessage());
+        }
     }
 
     private void createNotificationChannel() {

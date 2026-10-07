@@ -1736,7 +1736,15 @@ function startAlarmClockTicker() {
   }, 2000);
 }
 
+let alarmRingingTimeoutId = null;
+
 function triggerAlarmAlert(alarmObj) {
+  // Clear any existing ringing timeout
+  if (alarmRingingTimeoutId) {
+    clearTimeout(alarmRingingTimeoutId);
+    alarmRingingTimeoutId = null;
+  }
+
   // Start repeating sound + vibration loop
   startAlarmSoundLoop();
 
@@ -1750,9 +1758,77 @@ function triggerAlarmAlert(alarmObj) {
   if (modal) modal.classList.add('active');
 
   sendAlarmSystemNotification(alarmObj);
+
+  // Auto-stop ringing after 1 minute (60 seconds) if no response
+  alarmRingingTimeoutId = setTimeout(() => {
+    onAlarmRingingTimeout(alarmObj);
+  }, 60000);
 }
 
+function onAlarmRingingTimeout(alarmObj) {
+  if (alarmRingingTimeoutId) {
+    clearTimeout(alarmRingingTimeoutId);
+    alarmRingingTimeoutId = null;
+  }
+
+  // 1. Stop audio/vibration and close ringing modal
+  dismissAlarmRinging();
+
+  // 2. Add missed session to Bedtime Queue
+  state.postponeSession();
+  refreshHomeView();
+
+  // 3. Post system/web notification
+  sendMissedSessionSystemNotification(alarmObj);
+
+  // 4. In-app toast notice
+  showMissedSessionNotice();
+}
+
+function sendMissedSessionSystemNotification(alarmObj) {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+  const title = "🌙 Missed Positivity Session";
+  const body = "You have missed a session so please do it whenever you are free. It has been added to your bedtime queue — please do it from the bedtime queue when you are free.";
+  const options = {
+    body: body,
+    icon: "icon-192.png",
+    badge: "icon-192.png",
+    tag: "magicians-alarm-missed",
+    renotify: true,
+    requireInteraction: false
+  };
+
+  if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, options);
+    }).catch(() => {
+      try { new Notification(title, options); } catch (e) {}
+    });
+  } else {
+    try { new Notification(title, options); } catch (e) {}
+  }
+}
+
+function showMissedSessionNotice() {
+  showToast("🌙 You missed a session. It has been added to your Bedtime Queue so please do it whenever you are free!", 6000);
+  refreshHomeView();
+}
+
+// Global bridge hooks for native Android interaction
+window.addMissedSessionToBedtimeQueue = function(count = 1) {
+  state.data.pendingCount = (state.data.pendingCount || 0) + count;
+  state.save();
+  refreshHomeView();
+  showMissedSessionNotice();
+};
+window.showMissedSessionNotice = showMissedSessionNotice;
+
 function dismissAlarmRinging() {
+  if (alarmRingingTimeoutId) {
+    clearTimeout(alarmRingingTimeoutId);
+    alarmRingingTimeoutId = null;
+  }
   stopAlarmSoundLoop();
   if (window.AndroidAlarmBridge && typeof window.AndroidAlarmBridge.stopNativeAlarmSound === 'function') {
     try { window.AndroidAlarmBridge.stopNativeAlarmSound(); } catch (e) {}
