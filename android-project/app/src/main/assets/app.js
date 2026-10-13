@@ -10,153 +10,168 @@
 const POSITIVITY_TOOLS = [
   {
     id: 1,
+    name: "Be The Goal",
+    icon: "🏁",
+    tagline: "Be at the Finishing Line for 5 Minutes",
+    category: "Manifestation & State Shift",
+    description: "What would you feel if your goal was already accomplished? How would you walk on the street? How would you be with your child? How would you meet new people? This feeling is what you hold and amplify for five minutes. Whenever you are struggling with any challenge, you are standing at the starting line. For a few moments, be at the finishing line.",
+    steps: [
+      "Bring your deepest goal or desired outcome clearly to mind.",
+      "Ask: How would I feel, walk, speak, and live if this was already completely accomplished?",
+      "Step directly out of the starting line and stand firmly at the finishing line.",
+      "Hold, savor, and amplify this feeling of total completion for the full five minutes."
+    ],
+    audioAffirmation: "It is already done. I stand at the finishing line in joy, ease, and fulfillment."
+  },
+  {
+    id: 2,
+    name: "I Used To Have...",
+    icon: "🌅",
+    tagline: "Speak As If the Issue Was Resolved Long Ago",
+    category: "Problem Transmutation",
+    description: "Take any current problem you would like to see a shift in, and speak as if it’s been already resolved. Rest in that feeling of relief that it was solved long ago. Feel gratitude at how different your life is now that this issue has been resolved—how much more freedom and ease you feel. Stay with the feeling for a few moments.",
+    steps: [
+      "Identify the problem or challenge you wish to see shifted.",
+      "Declare aloud or silently: 'I used to have this challenge, but it was resolved so gracefully.'",
+      "Sink deeply into the profound relief that this issue was solved long ago.",
+      "Feel genuine gratitude for how much freedom, space, and ease you now enjoy."
+    ],
+    audioAffirmation: "I used to have this issue. It was solved long ago, and I rest in sweet relief."
+  },
+  {
+    id: 3,
+    name: "Thank You God In Advance...",
+    icon: "🌟",
+    tagline: "Speak to God as a Happy Receiver, Not a Beggar",
+    category: "Faith & Manifestation",
+    description: "‘Thank you God for solving this problem! Thank you God for giving me exactly what I needed!’ Speak to God as a happy receiver, not as a beggar. What feelings would you feel if God answered your prayer? Would you be happy, smiling, relaxed and grateful? Feel that now.",
+    steps: [
+      "Drop any posture of begging, pleading, or lack.",
+      "Speak joyfully: 'Thank you God for solving this problem! Thank you God for giving me exactly what I needed!'",
+      "Imagine God has already fully answered your prayer this very second.",
+      "Smile, breathe deeply, relax your shoulders, and radiate happy gratitude."
+    ],
+    audioAffirmation: "Thank you God in advance for solving this and providing exactly what I need!"
+  },
+  {
+    id: 4,
+    name: "Appreciation",
+    icon: "💝",
+    tagline: "Give a Generous Dose of Vitamin A",
+    category: "Love & Connection",
+    description: "Pause and think of the numerous people in your life who serve and support you yet you don't give them a second glance. Is it a junior at work? Is it a security guard? Is it a family member? Give a generous dose of Vitamin A to at least three people who you have rarely or never appreciated. You can do it either in your mind, or through sincere words and actions. Give what you enjoy receiving: acknowledgement and genuine appreciation. In doing so, you utilize the Master Secret of the Universe: Give that which you want most from others.",
+    steps: [
+      "Think of people who support or serve you whom you rarely give a second glance.",
+      "Select at least three specific individuals (a colleague, service staff, family member).",
+      "Give them a rich dose of 'Vitamin A'—sincere acknowledgement and heartfelt appreciation.",
+      "Send gratitude across your mind, or prepare to speak sincere words of thanks to them."
+    ],
+    audioAffirmation: "I see you, I value you, and I appreciate all that you bring to this world."
+  },
+  {
+    id: 5,
+    name: "True Healing Declarations",
+    icon: "👑",
+    tagline: "Heal Both Parties Beyond the Ego",
+    category: "Ultimate Healing & Truth",
+    description: "True Healing Declarations are powerful because they go against the ego’s normal selfish way of thinking and focus on healing both parties. Think of the people in your life and feel the truth of these words as best as you can—\nYou are the Light. I am the Light.\nYou are complete. I am complete.\nYou are a beautiful creation of God. I am a beautiful creation of God.\nYou deserve perfect happiness. I deserve perfect happiness.\nYou are one with God. I am one with God.\nAllow yourself a minute to create your own declarations specific to your situation afterwards.",
+    steps: [
+      "Hold someone in your mind (especially anyone where tension or fear exists).",
+      "Recite: 'You are the Light. I am the Light. You are complete. I am complete.'",
+      "Recite: 'You are a beautiful creation of God. I am a beautiful creation of God. You deserve perfect happiness. I deserve perfect happiness.'",
+      "Declare: 'You are one with God. I am one with God.' Then speak your own declarations."
+    ],
+    audioAffirmation: "You are the Light. I am the Light. We are complete and one with God."
+  },
+  {
+    id: 6,
     name: "New Ho'oponopono",
-    icon: "🕊️",
+    icon: "🌺",
     tagline: "I LOVE you. I SEE you. I HONOR you. I BLESS you.",
     category: "Healing & Blessing",
-    description: "Say these lines with feeling for different people in your field of Consciousness. If you are upset with someone, say it three times for that person. You can say this for your house, your business and your child's school too.",
+    description: "I LOVE you. I SEE you. I HONOR you. I BLESS you. Say these four lines of appreciation with feeling for different people who are in your field of Consciousness. If you are upset with someone, say it at least three times for that person. Self-Ho’oponopono is also very helpful if you are prone to self-judgment. Daily say ‘I love, I see you, I honor you, I bless you’ to yourself and to each part of your body.",
     steps: [
-      "Envision a person, place, or situation in your mind's eye.",
+      "Envision a person, place, or situation in your field of Consciousness.",
       "Speak from the heart: 'I LOVE you. I SEE you. I HONOR you. I BLESS you.'",
-      "If you feel upset or conflicted, repeat 3 times with total sincerity.",
-      "Extend this blanket of divine love to your home, workplace, and loved ones."
+      "If upset with someone, repeat at least 3 times with sincere intention.",
+      "Practice Self-Ho'oponopono: send these four sacred lines to yourself and every part of your body."
     ],
     audioAffirmation: "I love you. I see you. I honor you. I bless you."
   },
   {
-    id: 2,
+    id: 7,
     name: "Prayer",
     icon: "🙏",
-    tagline: "Double Request to God & Spirit",
+    tagline: "Pray from Perfection, Not from Lack",
     category: "Divine Connection",
-    description: "Communicate from the heart to God, Spirit, Babaji, Jesus, Mother Mary, archangels and guides. The highest form of prayer asks for God: 'I am ready to God, please come. If there's anything blocking this, please let me see it.'",
+    description: "Communicate from the heart to God, Spirit, Babaji, Jesus, Mother Mary, archangels or Spirit guides. Prayer is not about begging, pleading, or convincing God to intervene. True Prayer begins with alignment and gratitude. You don't pray for something, you pray from the state where it already exists—otherwise, you are amplifying lack. A Course in Miracles says the only prayer we need is to see the perfection we already have. So whenever you are stuck, you can say, \"Spirit, help me to see this from your perspective. Help me to see this differently.\" The highest form of prayer asks only for God.",
     steps: [
-      "Open your heart directly to Spirit, the Divine, and your Guides.",
-      "Declare the first request: 'I am ready to God, please come.'",
-      "Declare the second request: 'If there is anything blocking this, please let me see it.'",
-      "Rest in receptive stillness and let divine presence fill your being."
+      "Communicate from the heart to God, Spirit, or your sacred Guides.",
+      "Release all pleading; align with the state where perfection already exists.",
+      "When stuck, pray: 'Spirit, help me to see this from your perspective. Help me to see this differently.'",
+      "Rest in the highest form of prayer that asks only for God's holy presence."
     ],
-    audioAffirmation: "I am ready to God, please come. Clear everything blocking my sight."
+    audioAffirmation: "Spirit, help me to see this from Your perspective. I rest in divine perfection."
   },
   {
-    id: 3,
-    name: "Forgiveness",
+    id: 8,
+    name: "Dual Forgiveness",
     icon: "🌸",
-    tagline: "Dual-Forgiveness: Restore Heaven",
+    tagline: "Restore Ever-Present Heaven Quickly",
     category: "Release & Peace",
-    description: "Grievance is the only thing that keeps you away from Heaven. The desire to be angry at God takes away this ever-present Heaven. Forgiveness restores us to Heaven. Go straight to dual-forgiveness.",
+    description: "Grievance is the only thing that keeps you away from Heaven. The desire to hold a grudge takes away this ever-present Heaven. Dual-Sided Forgiveness quickly restores us to Heaven. In dual-sided forgiveness, you forgive the other person for whatever wrong you think they have said or done, and then forgive yourself for the same thing. For example: I forgive you for being so scared and confused at times. I forgive me for being so scared and confused at times.",
     steps: [
-      "Bring to mind anyone you feel resistance or grievance towards.",
-      "Acknowledge the fear behind their action without judgment.",
-      "Declare: 'I forgive you for being so scared and confused.'",
-      "Turn gently inward: 'I forgive me for being so scared and confused.'"
+      "Bring to mind anyone you feel resentment, grievance, or a grudge toward.",
+      "Recognize the confusion and fear underneath the situation.",
+      "Speak sincerely: 'I forgive you for being so scared and confused at times.'",
+      "Turn inward with gentle mercy: 'I forgive me for being so scared and confused at times.'"
     ],
     audioAffirmation: "I forgive you for being scared and confused. I forgive me for being scared and confused."
   },
   {
-    id: 4,
+    id: 9,
     name: "Gratitude",
     icon: "✨",
-    tagline: "Appreciate What You Have Right Now",
+    tagline: "Seeing that Absolutely Nothing is Missing",
     category: "Abundance & Joy",
-    description: "Appreciate what you already have in your life in this moment: a roof over your head, food, family, clothes, money in the bank. That's better than many on the planet right now. Be grateful for that.",
+    description: "Ask the mind and it will tell you fifty things that are missing in this moment. Ask the Being, the deepest part of you, and it will say nothing is missing—only the mind is telling you a story. Recognising this truth is gratitude. Gratitude is not about comparing yourself to others and feeling superior. Gratitude is seeing there is absolutely nothing missing in this moment. Sit in the space of gratitude for a few minutes: \"This moment is fine. I can rest here without begging or chasing anything else.\" Gratitude is a superpower. Whatever you are grateful for increases in your life. That is the rule of gratitude.",
     steps: [
-      "Feel the physical safety and protection around you right now.",
-      "Silently thank the breath in your lungs and the clothes on your body.",
-      "Honor your home, your water, food, and the people supporting you.",
-      "Allow the warmth of overflowing fullness to expand across your chest."
+      "Observe the restless mind looking for what is lacking, and drop beneath it.",
+      "Connect with Being: the deepest part of you that knows nothing is missing.",
+      "Sit in stillness: 'This moment is fine. I can rest here without begging or chasing anything else.'",
+      "Recognize gratitude as your superpower—what you appreciate multiplies."
     ],
-    audioAffirmation: "I am deeply grateful for this breath, this shelter, and the abundance of life."
-  },
-  {
-    id: 5,
-    name: "Thank You God For...",
-    icon: "🌟",
-    tagline: "Advance Manifestation",
-    category: "Manifestation",
-    description: "Thanking God in advance is a manifestation technique to frame your problem as if it's already solved, even though in 'reality' it's not occurred already. Example: 'Thank you God in advance for fixing this situation.'",
-    steps: [
-      "Identify a problem or desire you want resolved.",
-      "Do not pray from lack; pray from completion.",
-      "Say aloud with calm certainty: 'Thank you God in advance for...'",
-      "Feel the sweet relief of the miracle already accomplished."
-    ],
-    audioAffirmation: "Thank you God in advance for making this journey so graceful and easy."
-  },
-  {
-    id: 6,
-    name: "Wouldn't It Be Nice If...",
-    icon: "🌿",
-    tagline: "Gentle Alignment Without Pushing",
-    category: "Gentle Creation",
-    description: "Instead of pushing others around you and the world to change, gently speak what you wish to see. For example: 'Wouldn't it be nice if my loved one could feel peace instead of guilt?'",
-    steps: [
-      "Release all struggle, force, and need to control other people.",
-      "Softly wonder: 'Wouldn't it be nice if [your peaceful wish]...'",
-      "Allow the thought to ripple effortlessly into creation.",
-      "Smile and trust that reality aligns when you stop forcing."
-    ],
-    audioAffirmation: "Wouldn't it be nice if love, harmony, and peace filled every heart today?"
-  },
-  {
-    id: 7,
-    name: "Affirmations",
-    icon: "💎",
-    tagline: "Speaking Truth with Quiet Confidence",
-    category: "Frequency Alignment",
-    description: "Speaking affirmation with quietness and confidence is very powerful. If the mind is in a fighting mood, don't try to outshout the negativity. Simply speak or listen quietly for 5 minutes.",
-    steps: [
-      "Drop all mental arguments and resistance.",
-      "Speak steady, quiet truths into your field.",
-      "Declare: 'I am peace. I am safe. Divine wisdom guides my every step.'",
-      "Let each word sink deep into your nervous system."
-    ],
-    audioAffirmation: "I am radiant health, infinite peace, and divine power."
-  },
-  {
-    id: 8,
-    name: "Handing It Over",
-    icon: "🤲",
-    tagline: "Surrender the Burden to Spirit",
-    category: "Surrender & Grace",
-    description: "If nothing makes sense, call Spirit in. Surrender the situation. Don't struggle to solve problems from a split mind which is confused and guilty. Ask Spirit to dissolve all errors of perception and restore perfect peace.",
-    steps: [
-      "Acknowledge with humility: 'I do not know how to solve this.'",
-      "Surrender the entire outcome into the hands of Spirit.",
-      "Pray: 'Dissolve all my errors of perception and restore perfect peace.'",
-      "Take a deep breath and feel the immense weight lifted off you."
-    ],
-    audioAffirmation: "Spirit, I hand this entirely over to You. Restore perfect peace."
-  },
-  {
-    id: 9,
-    name: "Blessing",
-    icon: "🌈",
-    tagline: "Send Unconditional Light",
-    category: "Universal Love",
-    description: "Speak blessings for individuals, for the world, even for AI. Whatever you are worried about in the world, you can bless. For example: 'May you be happy. May you experience the peace of God.'",
-    steps: [
-      "Think of someone struggling, a global situation, or future technology.",
-      "Send a beam of pure golden light to them.",
-      "Bless them wholeheartedly: 'May you be happy. May you know peace.'",
-      "Experience how blessing others instantly uplifts your own soul."
-    ],
-    audioAffirmation: "May you be happy. May you experience the boundless peace of God."
+    audioAffirmation: "Nothing is missing in this holy moment. I rest in complete gratitude."
   },
   {
     id: 10,
-    name: "Declaring the Highest Truth",
-    icon: "👑",
-    tagline: "We Are the Light — We Are Complete",
-    category: "Ultimate Truth",
-    description: "At the end of every session, always declare the highest truth for others so we don't see them as victims. 'I am the Light. You are the Light. I am complete, You are complete. I am one with God.'",
+    name: "Wouldn't It Be Nice If...",
+    icon: "🌿",
+    tagline: "Set a Positive Energetic Blueprint",
+    category: "Gentle Creation",
+    description: "We waste our creative potential to create miracles by repeating the same painful loops. Most humans never think what a positive energetic blueprint for a marriage or job or spiritual path could look like. ‘Wouldn't it be nice’ sets up an energetic blueprint of a different imagined future—a positive, joyful, surprising variation. Instead of pushing others around you and the world to change, gently speak the change you wish to see. Wouldn’t it be nice if my child could love himself instead of feeling guilty? Wouldn’t it be nice if my mother could forgive my father?",
     steps: [
-      "Rise above all worldly illusions and appearances.",
-      "Declare with supreme authority: 'I am the Light. You are the Light.'",
-      "'I am complete, You are complete. I deserve perfect happiness.'",
-      "'I am one with God. We are complete and whole.'"
+      "Stop repeating painful past loops and pushing people or the world to change.",
+      "Ask: What does a joyful, loving energetic blueprint for this situation look like?",
+      "Gently wonder: 'Wouldn’t it be nice if [speak the uplifting change you wish to see]?'",
+      "Rest in the peaceful, creative ripple of this positive imagined future."
     ],
-    audioAffirmation: "I am the Light. You are the Light. We are complete. I am one with God."
+    audioAffirmation: "Wouldn't it be nice if love, harmony, and joy unfolded with gentle ease?"
+  },
+  {
+    id: 11,
+    name: "Handing It Over",
+    icon: "🤲",
+    tagline: "Surrender Problems to Spirit and Relax",
+    category: "Surrender & Grace",
+    description: "When nothing makes sense, surrender the situation. Don’t struggle to solve problems from a split mind which is confused and guilty. Be willing to see the problem—and you as you perceive yourself—are both illusions. Ask Spirit to dissolve all your errors of perception and to restore perfect peace. Spirit, I am feeling angry again, can I hand it over to you for healing? Let Spirit be the one to solve this problem, focus your intention on peace and joy for everyone involved.\nIf it helps, imagine that you are standing on top of a mountain with a large basket, into which you put all your problems. Or you can imagine you are standing in a large meadow with a white bedsheet. In every form of handing it over, you are saying, ‘I am not going to struggle to understand this. I am going to leave it to you.’ Then relax and do nothing. When you do nothing, your system suddenly becomes receptive.",
+    steps: [
+      "Stop struggling to solve problems from a split, tired, or confused mind.",
+      "Surrender: 'Spirit, I hand this over to You for healing. Restore perfect peace.'",
+      "Visualize standing on a mountain placing problems into a basket, or onto a meadow's white sheet.",
+      "Declare: 'I will not struggle with this; I leave it to You.' Relax, do nothing, and become receptive."
+    ],
+    audioAffirmation: "Spirit, I hand this over to You for healing. I relax and allow peace to lead."
   }
 ];
 
