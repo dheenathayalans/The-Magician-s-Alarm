@@ -94,6 +94,44 @@ public class NativeAlarmScheduler {
         }
     }
 
+    public static void scheduleSnoozeAlarm(Context context, int id, String label, int minutes) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) return;
+
+        long triggerMillis = System.currentTimeMillis() + (minutes * 60 * 1000L);
+
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.setAction(AlarmConstants.ACTION_FIRE_ALARM);
+        intent.putExtra(AlarmConstants.EXTRA_ALARM_ID, id);
+        intent.putExtra(AlarmConstants.EXTRA_ALARM_LABEL, label);
+        intent.putExtra(AlarmConstants.EXTRA_ALARM_TIME, "Snoozed (" + minutes + "m)");
+        intent.putExtra(AlarmConstants.EXTRA_ALARM_SOUND, "singing_bowl");
+
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+
+        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(context, id, intent, flags);
+        Intent showIntent = new Intent(context, MainActivity.class);
+        PendingIntent showPendingIntent = PendingIntent.getActivity(context, id, showIntent, flags);
+
+        try {
+            AlarmManager.AlarmClockInfo clockInfo = new AlarmManager.AlarmClockInfo(triggerMillis, showPendingIntent);
+            alarmManager.setAlarmClock(clockInfo, alarmPendingIntent);
+            Log.d(TAG, "Snooze alarm " + id + " scheduled in " + minutes + " minutes at " + triggerMillis);
+        } catch (SecurityException se) {
+            Log.e(TAG, "SecurityException while scheduling snooze alarm: " + se.getMessage());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerMillis, alarmPendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerMillis, alarmPendingIntent);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to schedule snooze alarm: " + e.getMessage());
+        }
+    }
+
     public static void cancelAlarm(Context context, int id) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) return;

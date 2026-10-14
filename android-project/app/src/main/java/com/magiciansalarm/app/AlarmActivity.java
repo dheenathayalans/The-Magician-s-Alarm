@@ -92,7 +92,7 @@ public class AlarmActivity extends Activity {
         btnSnooze.setOnClickListener(v -> {
             autoDismissHandler.removeCallbacks(autoDismissRunnable);
             stopAlarmService();
-            NativeAlarmScheduler.scheduleQuickTestAlarm(AlarmActivity.this, 15 * 60);
+            NativeAlarmScheduler.scheduleSnoozeAlarm(AlarmActivity.this, alarmId, alarmLabel, 15);
             finish();
         });
 

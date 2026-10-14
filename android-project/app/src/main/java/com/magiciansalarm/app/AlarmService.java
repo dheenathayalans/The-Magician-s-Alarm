@@ -39,6 +39,8 @@ public class AlarmService extends Service {
     private AudioFocusRequest audioFocusRequest;
     private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
     private Runnable timeoutRunnable;
+    private int activeAlarmId = 1;
+    private String activeAlarmLabel = "Spirit's Positivity Challenge";
 
     @Override
     public void onCreate() {
@@ -76,6 +78,26 @@ public class AlarmService extends Service {
         if (label == null || label.isEmpty()) label = "Spirit's Positivity Challenge";
         String timeStr = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_TIME);
         if (timeStr == null) timeStr = "Now";
+
+        this.activeAlarmId = alarmId;
+        this.activeAlarmLabel = label;
+
+        // Auto-snooze for 15 minutes if user is on a cellular or VoIP/WhatsApp call
+        if (AlarmReceiver.isUserOnCall(this)) {
+            Log.d(TAG, "AlarmService: User is on call. Snoozing for 15 minutes.");
+            AlarmReceiver.postCallSnoozeNotification(this, alarmId, label);
+            NativeAlarmScheduler.scheduleSnoozeAlarm(this, alarmId, label, 15);
+            Notification callSnoozeNotification = new NotificationCompat.Builder(this, AlarmConstants.CHANNEL_CALL_SNOOZE_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Alarm Snoozed for 15m 📞")
+                .setContentText("You are on a call. Snoozed for 15 minutes.")
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build();
+            startForeground(AlarmReceiver.CALL_SNOOZE_NOTIFICATION_ID, callSnoozeNotification);
+            stopForeground(false);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
 
         createNotificationChannel();
 
@@ -165,8 +187,17 @@ public class AlarmService extends Service {
                 audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
                     .setAudioAttributes(audioAttributes)
                     .setOnAudioFocusChangeListener(focusChange -> {
-                        // Keep playing! Do not allow other apps to silence this sacred alarm.
-                        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+                        if (focusChange == AudioManager.AUDIOFOCUS_LOSS || 
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                            if (AlarmReceiver.isUserOnCall(AlarmService.this)) {
+                                Log.d(TAG, "Audio focus lost to active/incoming call. Auto-snoozing alarm for 15 minutes.");
+                                handleCallAutoSnooze(activeAlarmId, activeAlarmLabel);
+                                return;
+                            }
+                        }
+                        // Keep playing! Do not allow other apps to silence this sacred alarm unless on a call.
+                        if (mediaPlayer != null && !mediaPlayer.isPlaying() && !AlarmReceiver.isUserOnCall(AlarmService.this)) {
                             try { mediaPlayer.start(); } catch (Exception ignored) {}
                         }
                     })
@@ -247,6 +278,20 @@ public class AlarmService extends Service {
 
         stopForeground(true);
         Log.d(TAG, "AlarmService stopped successfully.");
+    }
+
+    private void handleCallAutoSnooze(int alarmId, String label) {
+        stopAlarm();
+        try {
+            Intent dismissIntent = new Intent(AlarmConstants.ACTION_DISMISS);
+            sendBroadcast(dismissIntent);
+        } catch (Exception e) {
+            Log.e(TAG, "Error broadcasting dismiss action: " + e.getMessage());
+        }
+
+        NativeAlarmScheduler.scheduleSnoozeAlarm(this, alarmId, label, 15);
+        AlarmReceiver.postCallSnoozeNotification(this, alarmId, label);
+        stopSelf();
     }
 
     private void handleMissedAlarmTimeout(int alarmId, String label) {

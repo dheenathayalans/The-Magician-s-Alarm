@@ -3,6 +3,8 @@ package com.magiciansalarm.app;
 public class AlarmConstants {
     public static final String CHANNEL_ID = "magicians_alarm_channel_high_v1";
     public static final String CHANNEL_NAME = "Sacred Positivity Alarms";
+    public static final String CHANNEL_CALL_SNOOZE_ID = "magicians_call_snooze_channel";
+    public static final String CHANNEL_CALL_SNOOZE_NAME = "Call Auto-Snooze Alerts";
     public static final String PREFS_NAME = "magicians_alarm_prefs";
     public static final String KEY_SAVED_ALARMS = "saved_native_alarms";
     public static final String KEY_BEDTIME_QUEUE = "bedtime_queue_count";
